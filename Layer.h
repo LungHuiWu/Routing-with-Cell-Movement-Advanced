@@ -16,5 +16,7 @@ public:
     Layer();
     Layer(string, int, char, int, int);
     virtual ~Layer();
+    int getsupply();
+    Layer& operator = (const Layer&);
 };
 

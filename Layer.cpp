@@ -21,3 +21,17 @@ Layer::Layer(string name, int index, char dir, int dsupply, int pf)
 
 Layer::~Layer(){
 }
+
+int Layer::getsupply(){
+    return DefaultSupply;
+}
+
+Layer& Layer::operator = (const Layer& l)
+{
+    Name = l.Name; //newnew
+    Idx = l.Idx;
+    Dir = l.Dir;
+    DefaultSupply = l.DefaultSupply;
+    Powerfactor = l.Powerfactor;
+    return *this;
+}
