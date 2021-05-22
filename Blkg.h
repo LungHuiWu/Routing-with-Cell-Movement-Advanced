@@ -1,0 +1,18 @@
+#include <string>
+#include "Layer.h"
+
+using namespace std;
+
+class Blkg
+{
+private:
+    string Name;
+    Layer Lyr;
+    int Demand;
+public:
+    Blkg();
+    Blkg(string, Layer, int);
+    ~Blkg();
+};
+
+
