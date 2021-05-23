@@ -7,7 +7,7 @@ using namespace std;
 class MCell
 {
 private:
-    string Name;
+    string MCName;
     int NumPin;
     int NumBlkg;
     Pin* pin1; // linked list

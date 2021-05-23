@@ -12,7 +12,7 @@ MCell::MCell()
 
 MCell::MCell(string name, int numpin, int numblkg)
 {
-    Name = name;
+    MCName = name;
     NumPin = numpin;
     NumBlkg = numblkg;
 }
