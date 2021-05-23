@@ -11,15 +11,29 @@ CellInst::CellInst()
     Movable = false;
 }
 
-CellInst::CellInst(string instname, string mcname, int row, int col, bool mov)
+CellInst::CellInst(MCell mc, string instname, int row, int col, bool mov)
 {
-    CellName = instname;
-    MCName = mcname;
+    InstName = instname;
+    MCName = mc.getName();
     Row = row;
     Col = col;
+    PList = mc.getPList();
+    BList = mc.getBList();
     Movable = mov;
+    VtgAreaGGridCount = 0;
 }
 
 CellInst::~CellInst()
 {
+}
+
+void CellInst::getPList()
+{
+    return PList;
+}
+
+void CellInst::setVtgArea(int x, int y)
+{
+    VtgArea.push_back(make_tuple(x,y));
+    VtgAreaGGridCount += 1;
 }

@@ -17,6 +17,13 @@ public:
     Layer(string, int, char, int, int);
     virtual ~Layer();
     int getsupply();
+    int getIdx();
     Layer& operator = (const Layer&);
+    bool operator == (const Layer&);
+    bool operator > (const Layer&);
+    bool operator < (const Layer&);
+    bool operator >= (const Layer&);
+    bool operator <= (const Layer&);
+    bool LowerError (int);
 };
 

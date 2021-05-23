@@ -14,7 +14,7 @@ Route::Route()
     LyrE = 0;
 }
 
-Route::Route(int rs, int cs, int ls, int re, int ce, int le)
+Route::Route(int rs, int cs, int ls, int re, int ce, int le, string netname)
 {
     RowS = rs;
     ColS = cs;

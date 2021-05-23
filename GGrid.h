@@ -6,13 +6,14 @@ using namespace std;
 class GGrid
 {
 private:
-    int rowIdx, colIdx;
+    int rowIdx, colIdx, LyrIdx;
     Layer Lyr;
     int supply;
 public:
     GGrid();
     GGrid(int, int, Layer);
     ~GGrid();
+    void adjustSupply(int);
 };
 
 

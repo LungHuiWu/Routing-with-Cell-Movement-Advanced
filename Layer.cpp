@@ -26,6 +26,10 @@ int Layer::getsupply(){
     return DefaultSupply;
 }
 
+int Layer::getIdx(){
+    return Idx;
+}
+
 Layer& Layer::operator = (const Layer& l)
 {
     Name = l.Name; //newnew
@@ -34,4 +38,34 @@ Layer& Layer::operator = (const Layer& l)
     DefaultSupply = l.DefaultSupply;
     Powerfactor = l.Powerfactor;
     return *this;
+}
+
+bool Layer::operator == (const Layer& l)
+{
+    return (this->Idx)==l.Idx;
+}
+
+bool Layer::operator > (const Layer& l)
+{
+    return (this->Idx)>l.Idx;
+}
+
+bool Layer::operator < (const Layer& l)
+{
+    return (this->Idx)<l.Idx;
+}
+
+bool Layer::operator <= (const Layer& l)
+{
+    return (this->Idx)<=l.Idx;
+}
+
+bool Layer::operator >= (const Layer& l)
+{
+    return (this->Idx)>=l.Idx;
+}
+
+bool Layer::LowerError(int l)
+{
+    return (this->Idx)<l;
 }
