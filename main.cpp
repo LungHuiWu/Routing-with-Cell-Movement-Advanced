@@ -17,5 +17,6 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-    
+    // TODO
+    // Parse the command and generate a design
 }

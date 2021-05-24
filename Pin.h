@@ -11,7 +11,7 @@ private:
     Layer Lyr;
     int Row;
     int Col;
-    bool Connected;
+    bool Connected; // True if it is connected by a net
 public:
     Pin();
     Pin(string, Layer, string);

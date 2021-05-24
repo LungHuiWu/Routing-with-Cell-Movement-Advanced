@@ -25,4 +25,5 @@ public:
     void setNumNet(int);
     void setNumVtgArea(int);
     void setNumRoute(int);
+    // The algorithms may be written under this class
 };

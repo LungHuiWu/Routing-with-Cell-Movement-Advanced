@@ -17,9 +17,10 @@ private:
     int Row;
     int Col;
     GGrid* Grid;
+    // Temporarily implement using vector, linked list(pointer) can used to save memory and time.
     vector<Pin> PList;
     vector<Blkg> BList;
-    vector<tuple<int,int>> VtgArea;
+    vector<tuple<int,int>> VtgArea; // There are better data structures
     int VtgAreaGGridCount;
 
 public:

@@ -24,6 +24,6 @@ public:
     bool operator < (const Layer&);
     bool operator >= (const Layer&);
     bool operator <= (const Layer&);
-    bool LowerError (int);
+    bool LowerError (int); // For checking min-layer-constraint
 };
 

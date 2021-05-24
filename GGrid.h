@@ -13,7 +13,7 @@ public:
     GGrid();
     GGrid(int, int, Layer);
     ~GGrid();
-    void adjustSupply(int);
+    void adjustSupply(int); // For non-default-supply-ggrids
 };
 
 

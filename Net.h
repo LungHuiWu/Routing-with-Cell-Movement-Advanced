@@ -20,7 +20,7 @@ public:
     Net();
     Net(string, int, int, int);
     ~Net();
-    void connect(CellInst, string);
+    void connect(CellInst, string); // For connecting nets onto pins
     void addRoute(int, int, int, int, int, int);
 };
 

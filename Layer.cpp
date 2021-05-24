@@ -67,5 +67,5 @@ bool Layer::operator >= (const Layer& l)
 
 bool Layer::LowerError(int l)
 {
-    return (this->Idx)<l;
+    return Idx<l;
 }
