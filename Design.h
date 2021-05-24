@@ -14,7 +14,7 @@ private:
     int ColMin, ColMax;
     int NumLyr, NumNonDefaultSupplyGGrid, NumMCell, NumCellInst, NumNet, NumVtgArea, NumRoute;
 public:
-    Design(/* args */);
+    Design();
     ~Design();
     void setMaxCellMove(int);
     void setBoundary(int, int, int, int);

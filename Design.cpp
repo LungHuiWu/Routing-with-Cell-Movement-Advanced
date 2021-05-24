@@ -4,7 +4,7 @@
 
 using namespace std;
 
-Design::Design(/* args */)
+Design::Design()
 {
 }
 
