@@ -27,7 +27,7 @@ CellInst::~CellInst()
 {
 }
 
-void CellInst::getPList()
+vector<Pin> CellInst::getPList()
 {
     return PList;
 }
