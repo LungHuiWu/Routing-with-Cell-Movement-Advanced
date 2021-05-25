@@ -10,11 +10,11 @@ private:
     int Idx;
     char Dir;
     int DefaultSupply;
-    int Powerfactor;
+    double Powerfactor;
 
 public:
     Layer();
-    Layer(string, int, char, int, int);
+    Layer(string, int, char, int, double);
     virtual ~Layer();
     int getsupply();
     int getIdx();

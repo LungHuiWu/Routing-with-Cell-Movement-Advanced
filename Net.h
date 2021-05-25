@@ -15,7 +15,7 @@ private:
     int NumPin;
     int MinLayer;
     int Weight;
-    vector<Route> RList;
+    vector<Route*> RList;
 public:
     Net();
     Net(string, int, int, int);

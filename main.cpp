@@ -19,4 +19,13 @@ int main(int argc, char** argv)
 {
     // TODO
     // Parse the command and generate a design
+    // argv[1]: input file name, argv[2]: output file name
+    if (argc != 3)
+    {
+        cout << "Usage: ./cell_move_router <input.txt> <output.txt>";
+    }
+    else
+    {
+        
+    }
 }

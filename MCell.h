@@ -11,8 +11,8 @@ private:
     string MCName;
     int NumPin;
     int NumBlkg;
-    vector<Pin> PList; // linked list
-    vector<Blkg> BList; // linked list
+    vector<Pin*> PList; // linked list
+    vector<Blkg*> BList; // linked list
     
 public:
     MCell();
@@ -21,7 +21,7 @@ public:
     string getName();
     void addPin(string, Layer);
     void addBlkg(string, Layer, int);
-    vector<Pin> getPList();
-    vector<Blkg> getBList();
+    vector<Pin*> getPList();
+    vector<Blkg*> getBList();
 };
 

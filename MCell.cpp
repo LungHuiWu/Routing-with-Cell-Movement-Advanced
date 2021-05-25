@@ -27,22 +27,22 @@ string MCell::getName()
     return MCName;
 }
 
-vector<Pin> MCell::getPList()
+vector<Pin*> MCell::getPList()
 {
     return PList;
 }
 
-vector<Blkg> MCell::getBList()
+vector<Blkg*> MCell::getBList()
 {
     return BList;
 }
 
 void MCell::addPin(string name, Layer l)
 {
-    PList.push_back(Pin(name, l, MCName));
+    PList.push_back(new Pin(name, l, MCName));
 }
 
 void MCell::addBlkg(string name, Layer l, int d)
 {
-    BList.push_back(Blkg(name, l, d, MCName));
+    BList.push_back(new Blkg(name, l, d, MCName));
 }

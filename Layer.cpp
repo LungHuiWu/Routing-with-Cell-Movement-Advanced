@@ -10,7 +10,7 @@ Layer::Layer()
     DefaultSupply = 0;
 }
 
-Layer::Layer(string name, int index, char dir, int dsupply, int pf)
+Layer::Layer(string name, int index, char dir, int dsupply, double pf)
 {
     Name = name;
     Idx = index;

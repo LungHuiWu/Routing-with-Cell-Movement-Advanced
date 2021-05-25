@@ -13,6 +13,7 @@ private:
     int RowMin, RowMax;
     int ColMin, ColMax;
     int NumLyr, NumNonDefaultSupplyGGrid, NumMCell, NumCellInst, NumNet, NumVtgArea, NumRoute;
+    vector<Layer*> LList;
 public:
     Design();
     ~Design();
@@ -25,5 +26,16 @@ public:
     void setNumNet(int);
     void setNumVtgArea(int);
     void setNumRoute(int);
-    // The algorithms may be written under this class
+    // Read file //
+    bool readFile(const string&);
+    void readMaxCellMove(string&);
+    void readGGridBoundaryIdx(string&);
+    void readLayer(string&);
+    void readNonDefaultGGrid(string&);
+    void readMCell(string&);
+    void readCellInst(string&);
+    void readNet(string&);
+    void readVtgArea(string&);
+    void readRoute(string&);
+    // Algorithms //
 };
