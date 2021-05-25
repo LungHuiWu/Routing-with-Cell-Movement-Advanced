@@ -24,17 +24,17 @@ MCell::~MCell()
 
 string MCell::getName()
 {
-    return Name;
+    return MCName;
 }
 
 vector<Pin> MCell::getPList()
 {
-    return Plist;
+    return PList;
 }
 
 vector<Blkg> MCell::getBList()
 {
-    return Blist;
+    return BList;
 }
 
 void MCell::addPin(string name, Layer l)

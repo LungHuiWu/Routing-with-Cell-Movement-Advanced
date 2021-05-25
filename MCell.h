@@ -11,8 +11,8 @@ private:
     string MCName;
     int NumPin;
     int NumBlkg;
-    vector<Pin> Plist; // linked list
-    vector<Blkg> Blist; // linked list
+    vector<Pin> PList; // linked list
+    vector<Blkg> BList; // linked list
     
 public:
     MCell();
