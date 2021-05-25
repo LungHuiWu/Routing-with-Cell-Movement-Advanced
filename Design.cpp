@@ -100,6 +100,8 @@ void Design::readGGridBoundaryIdx(string& str)
     in >> s; ColMin = stoi(s); // colBeginIdx
     in >> s; RowMax = stoi(s); // rowEndIdx
     in >> s; ColMax = stoi(s); // colEndIdx
+    NumRow = RowMax - RowMin + 1;
+    NumCol = ColMax - ColMin + 1;
 }
 void Design::readLayer(string& str)
 {
@@ -112,23 +114,86 @@ void Design::readLayer(string& str)
         in >> s;
         NumLyr = stoi(s);
     }
-    else if (s == "Lay")
+    else
     {
         in >> s; string name = s;
         in >> s; int idx = stoi(s);
         in >> s; char dir = s[0];
         in >> s; int supply = stoi(s);
         in >> s; double power = stod(s);
-        LList.push_back(new Layer(name, idx, dir, supply, power));
+        LList.insert(pair<string, Layer*> (name, new Layer(name, idx, dir, supply, power)));
         cout << "Layer " << idx << "("<< name << ") added to the design!" << endl;
+    }
+}
+void Design::readNonDefaultGGrid(string& str)
+{
+    istringstream in(str);
+    string s;
+    in >> s;
+    if (s == "NumNonDefaultSupplyGGrid")
+    {
+        cout << "Reading GGrid..." << endl;
+        in >> s; NumNonDefaultSupplyGGrid = stoi(s);
+        // build GGrids
+        GGridList = new GGrid**[NumRow];
+        for (size_t i = 0; i < NumRow; ++i)
+        {
+            GGridList[i] = new GGrid*[NumCol];
+            for (size_t j = 0; j < NumCol; ++j)
+            {
+                GGridList[i][j] = new GGrid[NumLyr];
+                for (const auto& l : LList)
+                {
+                    GGridList[i][j][l.second->getIdx()-1] = GGrid(i+1, j+1, l.second);
+                }
+            }
+        }
+        cout << "All GGrids constructed!" << endl;
     }
     else
     {
-        cerr << "Wrong input format!!!" << endl;
+        int x = stoi(s);
+        in >> s; int y = stoi(s);
+        in >> s; int z = stoi(s);
+        in >> s;
+        GGridList[x][y][z].adjustSupply(stoi(s));
+        cout << "Done adjusting non-default supplies!" << endl;
     }
 }
-void Design::readNonDefaultGGrid(string& str){}
-void Design::readMCell(string& str){}
+void Design::readMCell(string& str)
+{
+    istringstream in(str);
+    string s;
+    in >> s;
+    if (s == "NumMasterCell")
+    {
+        cout << "Reading MCell..." << endl;
+        in >> s; NumMCell = stoi(s);
+    }
+    else if (s == "MasterCell")
+    {
+        in >> s; string name = s;
+        in >> s; int p_cnt = stoi(s);
+        in >> s; int b_cnt = stoi(s);
+        MCList.push_back(MCell(name, p_cnt, b_cnt));
+        cout << "MasterCell " << name << " added to the design." << endl;
+    }
+    else if (s == "Pin")
+    {
+        in >> s; string name = s;
+        in >> s; string layer = s;
+        MCList.back().addPin(name, *LList[layer]);
+        cout << "Pin " << name << " added to MasterCell " << MCList.back().getName() << "." << endl;
+    }
+    else if (s == "Blkg")
+    {
+        in >> s; string name = s;
+        in >> s; string layer = s;
+        in >> s; double d = stod(s);
+        MCList.back().addBlkg(name, *LList[layer], d);
+        cout << "Blkg " << name << " added to MasterCell " << MCList.back().getName() << "." << endl;
+    }
+}
 void Design::readCellInst(string& str){}
 void Design::readNet(string& str){}
 void Design::readVtgArea(string& str){}

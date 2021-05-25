@@ -42,7 +42,7 @@ void MCell::addPin(string name, Layer l)
     PList.push_back(new Pin(name, l, MCName));
 }
 
-void MCell::addBlkg(string name, Layer l, int d)
+void MCell::addBlkg(string name, Layer l, double d)
 {
     BList.push_back(new Blkg(name, l, d, MCName));
 }

@@ -20,7 +20,7 @@ public:
     ~MCell();
     string getName();
     void addPin(string, Layer);
-    void addBlkg(string, Layer, int);
+    void addBlkg(string, Layer, double);
     vector<Pin*> getPList();
     vector<Blkg*> getBList();
 };

@@ -9,10 +9,10 @@ private:
     string Name;
     string MC;
     Layer Lyr;
-    int Demand;
+    double Demand;
 public:
     Blkg();
-    Blkg(string, Layer, int, string);
+    Blkg(string, Layer, double, string);
     ~Blkg();
 };
 

@@ -1,4 +1,6 @@
 #include <string>
+#include <vector>
+#include <map>
 #include "GGrid.h"
 #include "Pin.h"
 #include "MCell.h"
@@ -12,8 +14,11 @@ private:
     int MaxCellMove;
     int RowMin, RowMax;
     int ColMin, ColMax;
+    int NumRow, NumCol;
     int NumLyr, NumNonDefaultSupplyGGrid, NumMCell, NumCellInst, NumNet, NumVtgArea, NumRoute;
-    vector<Layer*> LList;
+    map<string,Layer*> LList;
+    GGrid*** GGridList;
+    vector<MCell> MCList;
 public:
     Design();
     ~Design();

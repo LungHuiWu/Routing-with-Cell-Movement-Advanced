@@ -9,7 +9,7 @@ Blkg::Blkg()
     Lyr = Layer();
 }
 
-Blkg::Blkg(string name, Layer layer, int d, string mc)
+Blkg::Blkg(string name, Layer layer, double d, string mc)
 {
     Name = name;
     Lyr = layer;

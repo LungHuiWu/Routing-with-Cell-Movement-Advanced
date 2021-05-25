@@ -11,13 +11,13 @@ GGrid::GGrid()
     LyrIdx = 0;
 }
 
-GGrid::GGrid(int row, int col, Layer layer)
+GGrid::GGrid(int row, int col, Layer* layer)
 {
     rowIdx = row;
     colIdx = col;
     Lyr = layer;
-    LyrIdx = Lyr.getIdx();
-    supply = Lyr.getsupply();
+    LyrIdx = Lyr->getIdx();
+    supply = Lyr->getsupply();
 }
 
 GGrid::~GGrid()
