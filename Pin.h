@@ -1,3 +1,5 @@
+#ifndef PIN_H
+#define PIN_H
 #include <string>
 #include "Layer.h"
 
@@ -22,4 +24,4 @@ public:
     string getName();
 };
 
-
+#endif // PIN_H

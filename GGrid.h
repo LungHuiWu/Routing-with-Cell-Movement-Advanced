@@ -1,3 +1,5 @@
+#ifndef GGRID_H
+#define GGRID_H
 #include <string>
 #include "Layer.h"
 
@@ -16,4 +18,4 @@ public:
     void adjustSupply(int); // For non-default-supply-ggrids
 };
 
-
+#endif // GGRID_H

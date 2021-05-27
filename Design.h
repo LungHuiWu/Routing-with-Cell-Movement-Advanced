@@ -1,3 +1,5 @@
+#ifndef DESIGN_H
+#define DESIGN_H
 #include <string>
 #include <vector>
 #include <map>
@@ -40,3 +42,5 @@ public:
     void readRoute(string&);
     // Algorithms //
 };
+
+#endif // DESIGN_H

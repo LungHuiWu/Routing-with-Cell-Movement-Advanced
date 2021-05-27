@@ -1,3 +1,5 @@
+#ifndef CELLINST_H
+#define CELLINST_H
 #include <string>
 #include <vector>
 #include <tuple>
@@ -28,3 +30,5 @@ public:
     vector<Pin*> getPList();
     void setVtgArea(int, int);
 };
+
+#endif // CELLINST_H

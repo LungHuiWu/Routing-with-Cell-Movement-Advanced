@@ -1,3 +1,5 @@
+#ifndef LAYER_H
+#define LAYER_H
 #include <string>
 
 using namespace std;
@@ -27,3 +29,4 @@ public:
     bool LowerError (int); // For checking min-layer-constraint
 };
 
+#endif // LAYER_H

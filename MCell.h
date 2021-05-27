@@ -1,3 +1,5 @@
+#ifndef MCELL_H
+#define MCELL_H
 #include <string>
 #include <vector>
 #include "Pin.h"
@@ -26,3 +28,4 @@ public:
     MCell& operator = (const MCell&);
 };
 
+#endif // MCELL_H

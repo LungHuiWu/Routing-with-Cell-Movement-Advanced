@@ -1,3 +1,5 @@
+#ifndef BLKG_H
+#define BLKG_H
 #include <string>
 #include "Layer.h"
 
@@ -16,4 +18,4 @@ public:
     ~Blkg();
 };
 
-
+#endif // BLKG_H

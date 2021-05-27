@@ -1,3 +1,5 @@
+#ifndef NET_H
+#define NET_H
 #include <string>
 #include <vector>
 #include "GGrid.h"
@@ -24,3 +26,4 @@ public:
     string getName();
 };
 
+#endif // NET_H
