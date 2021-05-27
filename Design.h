@@ -5,6 +5,8 @@
 #include "Pin.h"
 #include "MCell.h"
 #include "Route.h"
+#include "CellInst.h"
+#include "Net.h"
 
 using namespace std;
 
@@ -18,19 +20,12 @@ private:
     int NumLyr, NumNonDefaultSupplyGGrid, NumMCell, NumCellInst, NumNet, NumVtgArea, NumRoute;
     map<string,Layer*> LList;
     GGrid*** GGridList;
-    vector<MCell> MCList;
+    map<string,MCell> MCList;
+    map<string,CellInst> CIList;
+    map<string,Net> NList;
 public:
     Design();
     ~Design();
-    void setMaxCellMove(int);
-    void setBoundary(int, int, int, int);
-    void setNumLyr(int);
-    void setNumNonDefaultSupplyGGrid(int);
-    void setNumMCell(int);
-    void setNumCellInst(int);
-    void setNumNet(int);
-    void setNumVtgArea(int);
-    void setNumRoute(int);
     // Read file //
     bool readFile(const string&);
     void readMaxCellMove(string&);
@@ -41,6 +36,7 @@ public:
     void readCellInst(string&);
     void readNet(string&);
     void readVtgArea(string&);
+    void readVtgArea2(string&, string&);
     void readRoute(string&);
     // Algorithms //
 };

@@ -46,3 +46,13 @@ void MCell::addBlkg(string name, Layer l, double d)
 {
     BList.push_back(new Blkg(name, l, d, MCName));
 }
+
+MCell& MCell::operator = (const MCell& m)
+{
+    MCName = m.MCName;
+    NumBlkg = m.NumBlkg;
+    NumPin = m.NumPin;
+    PList = m.PList;
+    BList = m.BList;
+    return *this;
+}

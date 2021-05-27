@@ -26,6 +26,8 @@ int main(int argc, char** argv)
     }
     else
     {
-        
+        Design D = Design();
+        D.readFile(argv[2]);
     }
+    return 1;
 }

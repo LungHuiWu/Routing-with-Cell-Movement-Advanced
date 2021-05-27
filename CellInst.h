@@ -1,7 +1,6 @@
 #include <string>
 #include <vector>
 #include <tuple>
-#include "GGrid.h"
 #include "Pin.h"
 #include "Blkg.h"
 #include "MCell.h"
@@ -16,7 +15,6 @@ private:
     bool Movable;
     int Row;
     int Col;
-    GGrid* Grid;
     // Temporarily implement using vector, linked list(pointer) can used to save memory and time.
     vector<Pin*> PList;
     vector<Blkg*> BList;

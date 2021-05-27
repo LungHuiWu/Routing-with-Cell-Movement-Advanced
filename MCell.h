@@ -23,5 +23,6 @@ public:
     void addBlkg(string, Layer, double);
     vector<Pin*> getPList();
     vector<Blkg*> getBList();
+    MCell& operator = (const MCell&);
 };
 
