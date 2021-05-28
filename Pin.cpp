@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 #include "Pin.h"
 
 using namespace std;

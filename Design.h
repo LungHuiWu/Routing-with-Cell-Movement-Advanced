@@ -34,9 +34,9 @@ public:
     void readGGridBoundaryIdx(string&);
     void readLayer(string&);
     void readNonDefaultGGrid(string&);
-    void readMCell(string&);
+    string readMCell(string&, string&);
     void readCellInst(string&);
-    void readNet(string&);
+    string readNet(string&, string&);
     void readVtgArea(string&);
     void readVtgArea2(string&, string&);
     void readRoute(string&);

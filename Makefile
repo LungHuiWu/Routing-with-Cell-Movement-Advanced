@@ -1,73 +1,45 @@
-#
-# This is for your executable
-#
-CFLAGS =-g -Wall -std=c++11
-CFLAGS = -O3 -std=c++11
-#
-# This is the setting for TA
-#
-# CFLAGS = -g -Wall -DTA_KB_SETTING -std=c++11
-# CFLAGS = -O3 -DTA_KB_SETTING -std=c++11
-# CFLAGS = -O3 -m32 -DTA_KB_SETTING -std=c++11
+# variables
+CC = g++ -std=c++11
+CFLAGS = -c
+OPTFLAGS = -O3
 
-###############
-# PHONY rules #
-###############
-.PHONY : eda
+all : cell_move_router
+	@echo "Compile Finished!!!"
 
-eda : MAKEFLAGS = $(CFLAGS)
-
-eda : .cell_move_router
-
-
-##############
-# Executable #
-#############
+# optimized version
 cell_move_router: main.o Design.o GGrid.o Net.o CellInst.o Blkg.o Pin.o MCell.o Route.o Layer.o
-	g++ -o $@ $(MAKEFLAGS) main.o Design.o GGrid.o Net.o CellInst.o Blkg.o Pin.o MCell.o Route.o Layer.o
-#	strip $@
+	@$(CC) $(OPTFLAGS) main.o Design.o GGrid.o Net.o CellInst.o Blkg.o Pin.o MCell.o Route.o Layer.o -o cell_move_router
 
-
-
-################
-# Object files #
-################
 main.o: main.cpp Design.h
-	g++ -g -c $(MAKEFLAGS) main.cpp
+	@$(CC) $(CFLAGS) $(OPTFLAGS) $< -o $@
 
 Design.o: Design.cpp Design.h MCell.h Pin.h Net.h GGrid.h Route.h CellInst.h
-	g++ -g -c $(MAKEFLAGS) Design.cpp
+	@$(CC) $(CFLAGS) $(OPTFLAGS) $< -o $@
 
 MCell.o:MCell.cpp MCell.h Pin.h Blkg.h
-	g++ -g -c $(MAKEFLAGS) MCell.cpp
+	@$(CC) $(CFLAGS) $(OPTFLAGS) $< -o $@
 
 Net.o:Net.cpp Net.h CellInst.h Route.h GGrid.h
-	g++ -g -c $(MAKEFLAGS) Net.cpp
+	@$(CC) $(CFLAGS) $(OPTFLAGS) $< -o $@
 
 CellInst.o:CellInst.cpp CellInst.h MCell.h Pin.h Blkg.h
-	g++ -g -c $(MAKEFLAGS) CellInst.cpp
+	@$(CC) $(CFLAGS) $(OPTFLAGS) $< -o $@
 
 Blkg.o:Blkg.cpp Blkg.h Layer.h
-	g++ -g -c $(MAKEFLAGS) Blkg.cpp
+	@$(CC) $(CFLAGS) $(OPTFLAGS) $< -o $@
 
 GGrid.o:GGrid.cpp GGrid.h Layer.h
-	g++ -g -c $(MAKEFLAGS) GGrid.cpp
+	@$(CC) $(CFLAGS) $(OPTFLAGS) $< -o $@
 
 Pin.o:Pin.cpp Pin.h Layer.h
-	g++ -g -c $(MAKEFLAGS) Pin.cpp
+	@$(CC) $(CFLAGS) $(OPTFLAGS) $< -o $@
 
 Route.o:Route.cpp Route.h
-	g++ -c $(MAKEFLAGS) Route.cpp
+	@$(CC) $(CFLAGS) $(OPTFLAGS) $< -o $@
 
 Layer.o:Layer.cpp Layer.h
-	g++ -c $(MAKEFLAGS) Layer.cpp
+	@$(CC) $(CFLAGS) $(OPTFLAGS) $< -o $@
 
-#######################
-# No dependency rules #
-#######################
-
+# clean
 clean:
-	rm -f *.o 
-
-ctags:
-	ctags *.cpp *.h
+	@rm -f *.o 

@@ -19,7 +19,7 @@ int main(int argc, char** argv)
     else
     {
         Design D = Design();
-        D.readFile(argv[2]);
+        D.readFile(argv[1]);
     }
     return 1;
 }

@@ -38,6 +38,7 @@ bool Design::readFile(const string& file)
     string str;
     string str_vtg_name = "";
     string str_vtg_ins = "";
+    string MCN = ""; string NN = "";
     int PC = 0; int flag = 0; int blah = 0;
     while(getline(f,str)){
         if(str.substr(0,11)      == "MaxCellMove"){PC=1;}
@@ -66,13 +67,13 @@ bool Design::readFile(const string& file)
             readNonDefaultGGrid(str);
             break;
         case MCELL:
-            readMCell(str);
+            MCN = readMCell(str, MCN);
             break;
         case CELLINST:
             readCellInst(str);
             break;
         case NET:
-            readNet(str);
+            NN = readNet(str, NN);
             break;
         case VTGAREA:
             if(flag == 1 && str_vtg_name == "")
@@ -104,13 +105,13 @@ bool Design::readFile(const string& file)
             }
             break;
         case ROUTE:
-            readVtgArea2(str_vtg_name, str_vtg_ins);
             readRoute(str);
             break;
         default:
             break;
         }
     }
+    readVtgArea2(str_vtg_name, str_vtg_ins);
     f.close();
     cout << "Finish Reading!!!" << endl;
     return true;
@@ -188,10 +189,10 @@ void Design::readNonDefaultGGrid(string& str)
         in >> s; int z = stoi(s);
         in >> s;
         GGridList[x][y][z].adjustSupply(stoi(s));
-        cout << "Done adjusting non-default supplies!" << endl;
+        cout << "Done adjusting non-default supplies at (" << x <<  "," << y << "," << z << ")!" << endl;
     }
 }
-void Design::readMCell(string& str)
+string Design::readMCell(string& str, string& MCname)
 {
     istringstream in(str);
     string s;
@@ -200,6 +201,7 @@ void Design::readMCell(string& str)
     {
         cout << "Reading MCell..." << endl;
         in >> s; NumMCell = stoi(s);
+        return MCname;
     }
     else if (s == "MasterCell")
     {
@@ -207,24 +209,27 @@ void Design::readMCell(string& str)
         in >> s; int p_cnt = stoi(s);
         in >> s; int b_cnt = stoi(s);
         MCList.insert(pair<string, MCell> (name,MCell(name, p_cnt, b_cnt)));
-        MCList["last"] = MCList[name];
         cout << "MasterCell " << name << " added to the design." << endl;
+        return name;
     }
     else if (s == "Pin")
     {
         in >> s; string name = s;
         in >> s; string layer = s;
-        MCList["last"].addPin(name, *LList[layer]);
-        cout << "Pin " << name << " added to MasterCell " << MCList["last"].getName() << "." << endl;
+        MCList[MCname].addPin(name, *LList[layer]);
+        cout << "Pin " << name << " added to MasterCell " << MCList[MCname].getName() << "." << endl;
+        return MCname;
     }
     else if (s == "Blkg")
     {
         in >> s; string name = s;
         in >> s; string layer = s;
         in >> s; double d = stod(s);
-        MCList["last"].addBlkg(name, *LList[layer], d);
-        cout << "Blkg " << name << " added to MasterCell " << MCList["last"].getName() << "." << endl;
+        MCList[MCname].addBlkg(name, *LList[layer], d);
+        cout << "Blkg " << name << " added to MasterCell " << MCList[MCname].getName() << "." << endl;
+        return MCname;
     }
+    return MCname;
 }
 void Design::readCellInst(string& str)
 {
@@ -248,7 +253,7 @@ void Design::readCellInst(string& str)
         // NOTE: The connection between CellInst & GGrids has not bean implement yet!!!
     }
 }
-void Design::readNet(string& str)
+string Design::readNet(string& str, string& Nname)
 {
     istringstream in(str);
     string s;
@@ -257,32 +262,36 @@ void Design::readNet(string& str)
     {
         in >> s; NumNet = stoi(s);
         cout << "Reading Net..." << endl;
+        return Nname;
     }
     else if(s == "Net")
     {
         in >> s; string name = s;
         in >> s; int p = stoi(s);
-        in >> s; int min = stoi(s);
+        in >> s; int min;
+        if (s != "NoCstr") min = LList[s]->getIdx();
+        else min = 0;
         in >> s; double w = stod(s);
         NList.insert(pair<string,Net> (name, Net(name, p, min, w)));
-        NList["last"] = NList[name];
         cout << "Net " << name << " added to the design." << endl;
+        return name;
     }
     else if (s == "Pin")
     {
         in >> s; size_t slash = s.find('/');
         string cname = s.substr(0,slash);
         string pname = s.substr(slash+1);
-        vector<Pin*> p = CIList[cname].getPList();
-        for (size_t i = 0; i<p.size(); ++i)
+        for (size_t i = 0; i<CIList[cname].getPList().size(); ++i)
         {
-            if (p[i]->getName()==pname)
+            if (CIList[cname].getPList()[i]->getName()==pname)
             {
-                p[i]->Connect();
-                cout << "Pin " << pname << " in CellInst " << cname << " is connected to Net " << NList["Last"].getName() << "." <<endl;
+                CIList[cname].getPList()[i]->Connect();
+                cout << "Pin " << pname << " in CellInst " << cname << " is connected to Net " << Nname << "." <<endl;
             }
         }
+        return Nname;
     }
+    return Nname;
 }
 void Design::readVtgArea(string& str)
 {
@@ -337,7 +346,7 @@ void Design::readRoute(string& str)
     }
     else
     {
-        in >> s; int r1 = stoi(s);
+        int r1 = stoi(s);
         in >> s; int c1 = stoi(s);
         in >> s; int l1 = stoi(s);
         in >> s; int r2 = stoi(s);
