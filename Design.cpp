@@ -116,6 +116,7 @@ bool Design::readFile(const string& file)
     cout << "Finish Reading!!!" << endl;
     return true;
 }
+
 void Design::readMaxCellMove(string& str)
 {
     cout << "Reading MaxCellMove..." << endl;
@@ -135,6 +136,7 @@ void Design::readGGridBoundaryIdx(string& str)
     NumRow = RowMax - RowMin + 1;
     NumCol = ColMax - ColMin + 1;
 }
+
 void Design::readLayer(string& str)
 {
     istringstream in(str);
@@ -157,6 +159,7 @@ void Design::readLayer(string& str)
         cout << "Layer " << idx << "("<< name << ") added to the design!" << endl;
     }
 }
+
 void Design::readNonDefaultGGrid(string& str)
 {
     istringstream in(str);
@@ -192,6 +195,7 @@ void Design::readNonDefaultGGrid(string& str)
         cout << "Done adjusting non-default supplies at (" << x <<  "," << y << "," << z << ")!" << endl;
     }
 }
+
 string Design::readMCell(string& str, string& MCname)
 {
     istringstream in(str);
@@ -231,6 +235,7 @@ string Design::readMCell(string& str, string& MCname)
     }
     return MCname;
 }
+
 void Design::readCellInst(string& str)
 {
     istringstream in(str);
@@ -253,6 +258,8 @@ void Design::readCellInst(string& str)
         // NOTE: The connection between CellInst & GGrids has not bean implement yet!!!
     }
 }
+
+// TODO: debug on connect
 string Design::readNet(string& str, string& Nname)
 {
     istringstream in(str);
@@ -281,6 +288,7 @@ string Design::readNet(string& str, string& Nname)
         in >> s; size_t slash = s.find('/');
         string cname = s.substr(0,slash);
         string pname = s.substr(slash+1);
+        // Need debug here: the pin name is not matching
         for (size_t i = 0; i<CIList[cname].getPList().size(); ++i)
         {
             if (CIList[cname].getPList()[i]->getName()==pname)
@@ -293,6 +301,7 @@ string Design::readNet(string& str, string& Nname)
     }
     return Nname;
 }
+
 void Design::readVtgArea(string& str)
 {
     istringstream in(str);
