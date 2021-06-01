@@ -39,15 +39,12 @@ vector<Blkg*> MCell::getBList()
 
 void MCell::addPin(string name, Layer l)
 {
-    Pin a = Pin(name, l, MCName);
-    PList.push_back(&a);
-    cout << PList.size() << endl;
+    PList.push_back(new Pin(name, l, MCName));
 }
 
 void MCell::addBlkg(string name, Layer l, double d)
 {
-    Blkg a = Blkg(name, l, d, MCName);
-    BList.push_back(&a);
+    BList.push_back(new Blkg(name, l, d, MCName));
 }
 
 MCell& MCell::operator = (const MCell& m)
