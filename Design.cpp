@@ -259,7 +259,6 @@ void Design::readCellInst(string& str)
     }
 }
 
-// TODO: debug on connect
 string Design::readNet(string& str, string& Nname)
 {
     istringstream in(str);
@@ -288,7 +287,6 @@ string Design::readNet(string& str, string& Nname)
         in >> s; size_t slash = s.find('/');
         string cname = s.substr(0,slash);
         string pname = s.substr(slash+1);
-        // Need debug here: the pin name is not matching
         for (size_t i = 0; i<CIList[cname].getPList().size(); ++i)
         {
             if (CIList[cname].getPList()[i]->getName()==pname)
