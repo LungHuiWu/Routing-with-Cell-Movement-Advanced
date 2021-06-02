@@ -1,4 +1,4 @@
-##2021 CAD Contest Problem B
+## 2021 CAD Contest Problem B
 
 ### Compile
 ```make```
