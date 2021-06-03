@@ -391,7 +391,7 @@ string Design::select()
         {
             maxWeight = Weight;
             CI = c.second.getCIName();
-            }
+        }
     }
     MCList.erase(CI);
     //delete route
