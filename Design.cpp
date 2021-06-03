@@ -2,7 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include<math>
+#include <limits>
+#include <cmath>
 #include "Design.h"
 
 using namespace std;
@@ -376,7 +377,7 @@ string Design::select()
     double maxWeight = 0;
     double Weight = 0;
     string CI;
-    for(const auto& c : mCIList)
+    for(auto& c : mCIList)
     {
         for(int i = 0; i < c.second.getPList().size(); i++)
         {   
@@ -392,13 +393,13 @@ string Design::select()
             CI = c.second.getCIName();
             }
     }
-    mCList.erase(CI);
+    MCList.erase(CI);
     //delete route
     for(int i = 0; i<CIList[CI].getPList().size(); i++)
     {
         string net = CIList[CI].getPList()[i]->getNetname();
         NList.erase(net);
-        CIList[CI].getPList()[i]->disconnect();
+        CIList[CI].getPList()[i]->Disconnect();
     }
     return CI;
 }
@@ -407,13 +408,13 @@ vector<tuple<int,int>> Design::placement(string& CI)
 {   
     vector<tuple<int,int>> p(2); //new places
     vector<string> c; //all cells connected to CI
-    vector<tuple<int,int>> Vtgarea = CIList[CI].getVtgarea();
-    int mindis = inf;
-    int secmindis = inf;
+    vector<tuple<int,int>> Vtgarea = CIList[CI].getVtgArea();
+    int mindis = numeric_limits<int>::max();
+    int secmindis = numeric_limits<int>::max();
     //find CIs connected to the target CI
-    for(int i = 0; i<CI.getPList().size(); i++)
+    for(int i = 0; i<CIList[CI].getPList().size(); i++)
     {
-        string net = CI.getPList()[i]->getNetname();
+        string net = CIList[CI].getPList()[i]->getNetname();
         if(net != "")
         {
             vector<string> CIs = NList[net].getCIs();
@@ -430,12 +431,12 @@ vector<tuple<int,int>> Design::placement(string& CI)
     for(int i = 0; i < Vtgarea.size(); i++)
     {
         int dis = 0;
-        int row = Vtgarea[i][0];
-        int col = Vtgarea[i][1];
+        int row = get<0>(Vtgarea[i]);
+        int col = get<1>(Vtgarea[i]);
         for(int i = 0; i<c.size(); i++)
         {
-            dis += abs(row-CIList[c[i]].getLocation()[0]);
-            dis += abs(col-CIList[c[i]].getLocation()[1]);
+            dis += abs(row-get<0>(CIList[c[i]].getLocation()));
+            dis += abs(col-get<1>(CIList[c[i]].getLocation()));
         }
         if (dis<mindis)
         {
