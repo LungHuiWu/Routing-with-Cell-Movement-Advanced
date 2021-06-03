@@ -43,7 +43,7 @@ string CellInst::getCIName()
     return InstName;
 }
 
-string CellInst::getVtgArea()
+vector<tuple<int,int>> CellInst::getVtgArea()
 {
     return VtgArea;
 }

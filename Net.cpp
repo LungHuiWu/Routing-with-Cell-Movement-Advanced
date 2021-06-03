@@ -30,7 +30,7 @@ void Net::connect(CellInst c, string pinname) //may be considered with the conne
         if(p[i]->getName()==pinname){
             p[i]->Connect(Name);
             auto CItoNet = find(conCIs.begin(), conCIs.end(), c.getCIName());
-            if (CItoNet = conCIs.end())
+            if (CItoNet == conCIs.end())
             {
                 conCIs.push_back(c.getCIName());
             }
@@ -57,7 +57,7 @@ string Net::getName(){
     return Name;
 }
 
-string Net::getWeight(){
+double Net::getWeight(){
     return Weight;
 }
 
