@@ -44,7 +44,7 @@ public:
     // Algorithms //
     string select();
     vector<tuple<int,int>> placement(string&);
-    void routing();
+    // void routing();
 };
 
 #endif // DESIGN_H

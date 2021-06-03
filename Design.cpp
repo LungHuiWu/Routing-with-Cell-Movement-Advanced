@@ -421,7 +421,7 @@ vector<tuple<int,int>> Design::placement(string& CI)
             for(int i = 0; i<CIs.size(); i++)
             {
                 auto inc = find(c.begin(), c.end(), CIs[i]);
-                if (CItoNet = conCIs.end())
+                if (inc == c.end())
                 {
                     c.push_back(CIs[i]);
                 }
