@@ -23,12 +23,17 @@ Net::~Net()
 {
 }
 
-void Net::connect(CellInst c, string pinname)
+void Net::connect(CellInst c, string pinname) //may be considered with the connect in pin
 {
     vector<Pin*> p = c.getPList();
     for(int i=0; i<p.size(); i++){
         if(p[i]->getName()==pinname){
-            p[i]->Connect();
+            p[i]->Connect(Name);
+            auto CItoNet = find(conCIs.begin(), conCIs.end(), c.getCIName());
+            if (CItoNet = conCIs.end())
+            {
+                conCIs.push_back(c.getCIName());
+            }
         }
     }
 }
@@ -50,4 +55,13 @@ Net& Net::operator = (const Net& n)
 
 string Net::getName(){
     return Name;
+}
+
+string Net::getWeight(){
+    return Weight;
+}
+
+vector<string> Net::getCIs()
+{
+    return conCIs;
 }

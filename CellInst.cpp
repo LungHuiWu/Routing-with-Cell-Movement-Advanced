@@ -37,3 +37,18 @@ void CellInst::setVtgArea(int x, int y)
     VtgArea.push_back(make_tuple(x,y));
     VtgAreaGGridCount += 1;
 }
+
+string CellInst::getCIName()
+{
+    return InstName;
+}
+
+string CellInst::getVtgArea()
+{
+    return VtgArea;
+}
+
+tuple<int,int> CellInst::getLocation()
+{
+    return make_tuple(Row,Col);
+}
