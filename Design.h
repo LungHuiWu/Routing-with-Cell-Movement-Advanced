@@ -24,6 +24,7 @@ private:
     GGrid*** GGridList;
     map<string,MCell> MCList;
     map<string,CellInst> CIList;
+    map<string,CellInst> mCIList; //the Cells to be replaced
     map<string,Net> NList;
 public:
     Design();
@@ -41,6 +42,9 @@ public:
     void readVtgArea2(string&, string&);
     void readRoute(string&);
     // Algorithms //
+    string select();
+    vector<tuple<int,int>> placement(string&);
+    void routing();
 };
 
 #endif // DESIGN_H

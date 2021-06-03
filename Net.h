@@ -16,6 +16,7 @@ private:
     int MinLayer;
     double Weight;
     vector<Route*> RList;
+    vector<string> conCIs; //CIs connected to the Net
 public:
     Net();
     Net(string, int, int, double);
@@ -24,6 +25,8 @@ public:
     void addRoute(int, int, int, int, int, int);
     Net& operator = (const Net&);
     string getName();
+    double getWeight();
+    vector<string> getCIs();
 };
 
 #endif // NET_H

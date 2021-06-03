@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include<math>
 #include "Design.h"
 
 using namespace std;
@@ -253,6 +254,10 @@ void Design::readCellInst(string& str)
         in >> s; int r = stoi(s);
         in >> s; int c = stoi(s);
         in >> s; bool mov = (s == "Movable");
+        if(mov == true)
+        {
+            mCIList.insert(pair<string, CellInst> (name, CellInst(MCList[mcname], name, r, c, mov)));
+        }
         CIList.insert(pair<string, CellInst> (name, CellInst(MCList[mcname], name, r, c, mov)));
         cout << "CellInst " << name << " added to the design at (" << r << ", " << c << ")." << endl;
         // NOTE: The connection between CellInst & GGrids has not bean implement yet!!!
@@ -291,7 +296,8 @@ string Design::readNet(string& str, string& Nname)
         {
             if (CIList[cname].getPList()[i]->getName()==pname)
             {
-                CIList[cname].getPList()[i]->Connect();
+                CIList[cname].getPList()[i]->Connect(Nname);
+                NList[Nname].connect(CIList[cname], pname);
                 cout << "Pin " << pname << " in CellInst " << cname << " is connected to Net " << Nname << "." <<endl;
             }
         }
@@ -363,5 +369,85 @@ void Design::readRoute(string& str)
         NList[n].addRoute(r1,c1,l1,r2,c2,l2);
         cout << "Route added to Net " << n << "." << endl;
     }
+}
+
+string Design::select()
+{   
+    double maxWeight = 0;
+    double Weight = 0;
+    string CI;
+    for(const auto& c : mCIList)
+    {
+        for(int i = 0; i < c.second.getPList().size(); i++)
+        {   
+            string net = c.second.getPList()[i]->getNetname();
+            if(net != "")
+            {
+                Weight += NList[net].getWeight();
+            }
+        }
+        if(Weight >= maxWeight)
+        {
+            maxWeight = Weight;
+            CI = c.second.getCIName();
+            }
+    }
+    mCList.erase(CI);
+    //delete route
+    for(int i = 0; i<CIList[CI].getPList().size(); i++)
+    {
+        string net = CIList[CI].getPList()[i]->getNetname();
+        NList.erase(net);
+        CIList[CI].getPList()[i]->disconnect();
+    }
+    return CI;
+}
+
+vector<tuple<int,int>> Design::placement(string& CI)
+{   
+    vector<tuple<int,int>> p(2); //new places
+    vector<string> c; //all cells connected to CI
+    vector<tuple<int,int>> Vtgarea = CIList[CI].getVtgarea();
+    int mindis = inf;
+    int secmindis = inf;
+    //find CIs connected to the target CI
+    for(int i = 0; i<CI.getPList().size(); i++)
+    {
+        string net = CI.getPList()[i]->getNetname();
+        if(net != "")
+        {
+            vector<string> CIs = NList[net].getCIs();
+            for(int i = 0; i<CIs.size(); i++)
+            {
+                auto inc = find(c.begin(), c.end(), CIs[i]);
+                if (CItoNet = conCIs.end())
+                {
+                    c.push_back(CIs[i]);
+                }
+            }
+        }
+    }
+    for(int i = 0; i < Vtgarea.size(); i++)
+    {
+        int dis = 0;
+        int row = Vtgarea[i][0];
+        int col = Vtgarea[i][1];
+        for(int i = 0; i<c.size(); i++)
+        {
+            dis += abs(row-CIList[c[i]].getLocation()[0]);
+            dis += abs(col-CIList[c[i]].getLocation()[1]);
+        }
+        if (dis<mindis)
+        {
+            mindis = dis;
+            p[0] = Vtgarea[i];
+            }
+        else if(dis>=mindis && dis<=secmindis)
+        {
+            secmindis = dis;
+            p[1] = Vtgarea[i];
+        }
+    }
+    return p;
 }
 

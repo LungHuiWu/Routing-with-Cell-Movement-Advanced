@@ -29,6 +29,9 @@ public:
     ~CellInst();
     vector<Pin*> getPList();
     void setVtgArea(int, int);
+    string getCIName();
+    vector<tuple<int,int>> getVtgArea();
+    tuple<int,int> getLocation();
 };
 
 #endif // CELLINST_H
