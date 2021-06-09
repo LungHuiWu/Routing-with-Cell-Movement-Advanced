@@ -6,11 +6,12 @@ using namespace std;
 
 class Route
 {
-private:
+public:
     int RowS, ColS, LyrS;
     int RowE, ColE, LyrE;
     string NetName;
-public:
+    string LayerS;
+    string LayerE;
     Route();
     Route(int, int, int, int, int, int, string);
     ~Route();

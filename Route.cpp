@@ -22,6 +22,7 @@ Route::Route(int rs, int cs, int ls, int re, int ce, int le, string netname)
     RowE = re;
     ColE = ce;
     LyrE = le;
+    NetName = netname;
 }
 
 Route::~Route()
