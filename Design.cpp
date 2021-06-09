@@ -603,3 +603,7 @@ vector<tuple<int,int>> Design::placement(string& CI)
     }
 }
 
+void Design::routing(string& newCI, tuple<int, int> new_loc)
+{
+    return;
+}
