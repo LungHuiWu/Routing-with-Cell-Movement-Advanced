@@ -442,7 +442,7 @@ vector<tuple<int,int>> Design::placement(string& CI)
         {
             mindis = dis;
             p[0] = Vtgarea[i];
-            }
+        }
         else if(dis>=mindis && dis<=secmindis)
         {
             secmindis = dis;
