@@ -463,6 +463,8 @@ void Design::routing(string& newCI, tuple<int, int> new_loc, vector<string>& net
 
 double Design::calculate(vector<Route*>& r, double weight)
 {
+    // r : route list
+    // weight : the weight of the net with this route list
     int X = NumRow;
     int Y = NumCol;
     int Z = NumLyr+1;

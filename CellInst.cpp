@@ -52,3 +52,9 @@ tuple<int,int> CellInst::getLocation()
 {
     return make_tuple(Row,Col);
 }
+
+void CellInst::Relocate(tuple<int,int>& t)
+{
+    Row = get<0>(t);
+    Col = get<1>(t);
+}

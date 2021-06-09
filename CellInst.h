@@ -32,6 +32,7 @@ public:
     string getCIName();
     vector<tuple<int,int>> getVtgArea();
     tuple<int,int> getLocation();
+    void Relocate(tuple<int,int>&);
 };
 
 #endif // CELLINST_H
