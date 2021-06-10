@@ -19,6 +19,7 @@ public:
     Layer(string, int, char, int, double);
     virtual ~Layer();
     int getsupply();
+    double getPF();
     int getIdx();
     Layer& operator = (const Layer&);
     bool operator == (const Layer&);
