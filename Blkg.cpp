@@ -20,3 +20,13 @@ Blkg::Blkg(string name, Layer layer, double d, string mc)
 Blkg::~Blkg()
 {
 }
+
+Layer Blkg::getLayer()
+{
+    return Lyr;
+}
+
+double Blkg::getDemand()
+{
+    return Demand;
+}

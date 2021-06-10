@@ -82,30 +82,37 @@ vector<string> Net::getCIs()
     return conCIs;
 }
 
-void Net::delRoute(CellInst c)
+vector<Route*> Net::delRoute(CellInst c, tuple<int, int> p, map<string,CellInst> CIList)
 {
-    /*
-    for(int i=0; i<RList.size(); i++ )
-    {
-        if (get<0>(RList[i]->getPoints()[0])==get<0>(c.getLocation()) && get<1>(RList[i]->getPoints()[0])==get<1>(c.getLocation()))
-        {
-            RList.erase(i);
-        }
-        else if (get<0>(RList[i]->getPoints()[1])==get<0>(c.getLocation()) && get<1>(RList[i]->getPoints()[1])==get<1>(c.getLocation()))
-        {
-            RList.erase(i);
-        }
-    }
-    */
     for(int i= 0; i<RList.size(); )
     {
-        if(get<0>(RList[i]->getPoints()[0])==get<0>(c.getLocation()) && get<1>(RList[i]->getPoints()[0])==get<1>(c.getLocation()))
+        if(get<0>(RList[i]->getPoints()[0])==get<0>(p) && get<1>(RList[i]->getPoints()[0])==get<1>(p))
         {
+            int ConnecttoCI = 0;
+            R.push_back(RList[i]);
             RList.erase(RList.begin()+i);
+            for(int i=0; i<conCIs.size(); i++)
+            {
+                if(CIList[conCIs[i]].getLocation() == make_tuple(get<0>(RList[i]->getPoints()[1]), get<1>(RList[i]->getPoints()[1])))
+                {
+                    return R;
+                }
+            }
+            delRoute(c, make_tuple(get<0>(RList[i]->getPoints()[1]), get<1>(RList[i]->getPoints()[1])), CIList);    
         }
-        else if (get<0>(RList[i]->getPoints()[1])==get<0>(c.getLocation()) && get<1>(RList[i]->getPoints()[1])==get<1>(c.getLocation()))
+        else if (get<0>(RList[i]->getPoints()[1])==get<0>(p) && get<1>(RList[i]->getPoints()[1])==get<1>(p))
         {
+            int ConnecttoCI = 0;
+            R.push_back(RList[i]);
             RList.erase(RList.begin()+i);
+            for(int i=0; i<conCIs.size(); i++)
+            {
+                if(CIList[conCIs[i]].getLocation() == make_tuple(get<0>(RList[i]->getPoints()[0]), get<1>(RList[i]->getPoints()[0])))
+                {
+                    return R;
+                }
+            }
+            delRoute(c, make_tuple(get<0>(RList[i]->getPoints()[0]), get<1>(RList[i]->getPoints()[0])), CIList); 
         }   
         else
         {
@@ -118,3 +125,4 @@ vector<Route*> Net::getRList()
 {
     return RList;
 }
+

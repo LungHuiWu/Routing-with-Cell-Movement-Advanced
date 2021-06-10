@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <map>
 #include "GGrid.h"
 #include "Route.h"
 
@@ -19,6 +20,7 @@ private:
     double Weight;
     vector<Route*> RList;
     vector<string> conCIs; //CIs connected to the Net
+    vector<Route*> R;
 public:
     Net();
     Net(string, int, int, double);
@@ -30,8 +32,9 @@ public:
     string getName();
     double getWeight();
     vector<string> getCIs();
-    void delRoute(CellInst);
+    vector<Route*> delRoute(CellInst, tuple<int, int>, map<string,CellInst>);
     vector<Route*> getRList();
+
 };
 
 #endif // NET_H

@@ -32,6 +32,7 @@ public:
     CellInst(MCell, string, int, int, bool);
     ~CellInst();
     vector<Pin*> getPList();
+    vector<Blkg*> getBList();
     void setVtgArea(int, int);
     string getCIName();
     bool hasVtgArea();

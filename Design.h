@@ -2,7 +2,6 @@
 #define DESIGN_H
 #include <string>
 #include <vector>
-#include <map>
 #include "GGrid.h"
 #include "Pin.h"
 #include "MCell.h"
@@ -28,6 +27,7 @@ private:
     map<string,Net> NList;
     vector<string> ADJCIs;
     vector<string> adjNets;
+    vector<Route*> delRList;
 public:
     Design();
     ~Design();

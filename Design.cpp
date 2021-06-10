@@ -397,13 +397,13 @@ string Design::select()
     mCIList.erase(CI);
     ADJCIs = CIList[CI].getADJCIs(NList);
     adjNets = CIList[CI].getADJNets();
-    //delete RList in CI
+    //delete Routes conntcted to CI
     for(int i = 0; i<CIList[CI].getPList().size(); i++)
     {
         string net = CIList[CI].getPList()[i]->getNetname();
         //CIList[CI].getPList()[i]->Disconnect();
         NList[net].Disconnect(CIList[CI],CIList[CI].getPList()[i]->getName());
-        NList[net].delRoute(CIList[CI]); 
+        delRList = NList[net].delRoute(CIList[CI], CIList[CI].getLocation(), CIList); //Routes which were deleted
     }
     return CI;
 }
@@ -545,11 +545,23 @@ vector<tuple<int,int>> Design::placement(string& CI)
             }
             for(int i=0; i<visited[0].size(); i++)
             {
+                int overlap=1;
+                int pointvalid = 1;
+                int row = get<0>(visited[0][i]);
+                int col = get<1>(visited[0][i]);
                 if(numinp==2)
                 {
                     break;
                 }
-                int overlap=1;
+                for(int i=0; i<CIList[CI].getBList().size(); i++)
+                {
+                    int lyr=CIList[CI].getBList()[i]->getLayer().getIdx()-1;
+                    if(GGridList[row][col][lyr].getSupply()<CIList[CI].getBList()[i]->getDemand())
+                    {
+                        pointvalid = 0;
+                    }
+                }
+                if(pointvalid==0) continue; //this point is not valid 
                 for(int j=1; j<visited.size(); j++)
                 {
                     if(find(visited[j].begin(), visited[j].end(), visited[0][i])==visited[j].end())
@@ -559,6 +571,7 @@ vector<tuple<int,int>> Design::placement(string& CI)
                 }
                 if(overlap==1 && find(p.begin(), p.end(), visited[0][i])==p.end())
                 {
+
                     if(true)//supply>demand
                     {
                         p.push_back(visited[0][i]);
@@ -583,6 +596,16 @@ vector<tuple<int,int>> Design::placement(string& CI)
             int dis = 0;
             int row = get<0>(Vtgarea[i]);
             int col = get<1>(Vtgarea[i]);
+            int pointvalid = 1;
+            for(int i=0; i<CIList[CI].getBList().size(); i++)
+            {
+                int lyr=CIList[CI].getBList()[i]->getLayer().getIdx()-1;
+                if(GGridList[row][col][lyr].getSupply()<CIList[CI].getBList()[i]->getDemand())
+                {
+                    pointvalid = 0;
+                }
+            }
+            if(pointvalid==0) continue; //this point is not valid 
             for(int i = 0; i<c.size(); i++)
             {
                 dis += abs(row-get<0>(CIList[c[i]].getLocation()));
@@ -591,13 +614,17 @@ vector<tuple<int,int>> Design::placement(string& CI)
             if (dis<mindis)
             {
                 mindis = dis;
-                p[0] = Vtgarea[i];
+                p[0] = Vtgarea[i];    
+                
             }
             else if(dis>=mindis && dis<=secmindis)
             {
+
                 secmindis = dis;
                 p[1] = Vtgarea[i];
+
             }
+                
         }
         return p;
     }

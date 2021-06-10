@@ -32,6 +32,12 @@ vector<Pin*> CellInst::getPList()
     return PList;
 }
 
+
+vector<Blkg*> CellInst::getBList()
+{
+    return BList;
+}
+
 void CellInst::setVtgArea(int x, int y)
 {
     VtgArea.push_back(make_tuple(x,y));

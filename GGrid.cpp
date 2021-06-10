@@ -28,3 +28,8 @@ void GGrid::adjustSupply(int i)
 {
     supply += i;
 }
+
+int GGrid::getSupply()
+{
+    return supply;
+}

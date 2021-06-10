@@ -16,6 +16,7 @@ public:
     GGrid(int, int, Layer*);
     ~GGrid();
     void adjustSupply(int); // For non-default-supply-ggrids
+    int getSupply();
 };
 
 #endif // GGRID_H
