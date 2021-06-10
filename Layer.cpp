@@ -33,6 +33,10 @@ double Layer::getPF(){
     return Powerfactor;
 }
 
+double Layer::getPF(){
+    return Powerfactor;
+}
+
 Layer& Layer::operator = (const Layer& l)
 {
     Name = l.Name; //newnew

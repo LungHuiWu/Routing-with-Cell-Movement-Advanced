@@ -652,6 +652,89 @@ double Design::calculate(vector<Route*>& r, double weight)
         }
         else if(c1 != c2)
         {
+<<<<<<< HEAD
+            for (int i=c1;i<c2;++i)
+            {
+                if(!arr[r1][i][l1])
+                {
+                    arr[r1][i][l1] = true;
+                    countEachLyr[l1] += 1;
+                }
+            }
+        }
+        else if(l1 != l2)
+=======
+            mindis = dis;
+            p[0] = Vtgarea[i];
+        }
+        else if(dis>=mindis && dis<=secmindis)
+>>>>>>> e271ea4cbe59c9cb85c2825563bfccd0a06864af
+        {
+            for (int i=l1;i<l2;++i)
+            {
+                if(!arr[r1][c1][i])
+                {
+                    arr[r1][c1][i] = true;
+                    countEachLyr[i] += 1;
+                }
+            }
+        }
+        else cout << "Wrong Route!!" << endl;
+    }
+<<<<<<< HEAD
+=======
+    return p;
+}
+
+void Design::routing(string& newCI, tuple<int, int> new_loc, vector<string>& net)
+{
+    for(size_t i=0; i<net.size();++i)
+    {
+        vector<string> allCI = NList[net[i]].getCIs();
+    }
+    return;
+}
+
+double Design::calculate(vector<Route*>& r, double weight)
+{
+    // r : route list
+    // weight : the weight of the net with this route list
+    int X = NumRow;
+    int Y = NumCol;
+    int Z = NumLyr+1;
+
+    bool ***arr = new bool**[X];
+    vector<int> countEachLyr(Z,0);
+    for(int i =0; i<X; i++){
+        arr[i] = new bool*[Y];
+        for(int j =0; j<Y; j++){
+            arr[i][j] = new bool[Z];
+            for(int k = 0; k<Z;k++){
+                arr[i][j][k] = false;
+            }
+        }
+    }
+    for(size_t i=0;i<r.size();++i)
+    {
+        int r1 = min(r[i]->RowS, r[i]->RowE);
+        int r2 = max(r[i]->RowS, r[i]->RowE);
+        int c1 = min(r[i]->ColS, r[i]->ColE);
+        int c2 = max(r[i]->ColS, r[i]->ColE);
+        int l1 = min(r[i]->LyrS, r[i]->LyrS);
+        int l2 = max(r[i]->LyrS, r[i]->LyrS);
+        if(r1 != r2)
+        {
+            for (int i=r1;i<r2;++i)
+            {
+                if(!arr[i][c1][l1])
+                {
+                    arr[i][c1][l1] = true;
+                    countEachLyr[l1] += 1;
+                }
+            }
+        }
+        else if(c1 != c2)
+        {
             for (int i=c1;i<c2;++i)
             {
                 if(!arr[r1][i][l1])
@@ -674,6 +757,7 @@ double Design::calculate(vector<Route*>& r, double weight)
         }
         else cout << "Wrong Route!!" << endl;
     }
+>>>>>>> e271ea4cbe59c9cb85c2825563bfccd0a06864af
     double cost = 0;
     for(auto& l : LList)
     {
