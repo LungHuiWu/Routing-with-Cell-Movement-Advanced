@@ -22,12 +22,9 @@ Route::Route(int rs, int cs, int ls, int re, int ce, int le, string netname)
     RowE = re;
     ColE = ce;
     LyrE = le;
-<<<<<<< HEAD
     p.push_back(make_tuple(RowS,ColS));
     p.push_back(make_tuple(RowE,ColE));
-=======
     NetName = netname;
->>>>>>> e271ea4cbe59c9cb85c2825563bfccd0a06864af
 }
 
 Route::~Route()

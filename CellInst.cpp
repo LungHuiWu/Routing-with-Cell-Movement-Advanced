@@ -53,7 +53,6 @@ tuple<int,int> CellInst::getLocation()
     return make_tuple(Row,Col);
 }
 
-<<<<<<< HEAD
 bool CellInst::hasVtgArea()
 {
     return (VtgAreaGGridCount!=0);
@@ -92,10 +91,10 @@ vector<string> CellInst::getADJNets() //find CIs connected to the CI
         }
     }
     return n;
-=======
+}
+
 void CellInst::Relocate(tuple<int,int>& t)
 {
     Row = get<0>(t);
     Col = get<1>(t);
->>>>>>> e271ea4cbe59c9cb85c2825563bfccd0a06864af
 }
