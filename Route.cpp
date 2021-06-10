@@ -22,8 +22,15 @@ Route::Route(int rs, int cs, int ls, int re, int ce, int le, string netname)
     RowE = re;
     ColE = ce;
     LyrE = le;
+    p.push_back(make_tuple(RowS,ColS));
+    p.push_back(make_tuple(RowE,ColE));
 }
 
 Route::~Route()
 {
+}
+
+vector<tuple<int, int>> Route::getPoints()
+{
+    return p;
 }

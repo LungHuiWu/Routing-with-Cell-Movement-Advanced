@@ -26,6 +26,8 @@ private:
     map<string,CellInst> CIList;
     map<string,CellInst> mCIList; //the Cells to be replaced
     map<string,Net> NList;
+    vector<string> ADJCIs;
+    vector<string> adjNets;
 public:
     Design();
     ~Design();

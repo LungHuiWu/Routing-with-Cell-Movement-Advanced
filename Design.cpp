@@ -297,7 +297,7 @@ string Design::readNet(string& str, string& Nname)
         {
             if (CIList[cname].getPList()[i]->getName()==pname)
             {
-                CIList[cname].getPList()[i]->Connect(Nname);
+                //CIList[cname].getPList()[i]->Connect(Nname);
                 NList[Nname].connect(CIList[cname], pname);
                 cout << "Pin " << pname << " in CellInst " << cname << " is connected to Net " << Nname << "." <<endl;
             }
@@ -375,10 +375,10 @@ void Design::readRoute(string& str)
 string Design::select()
 {   
     double maxWeight = 0;
-    double Weight = 0;
     string CI;
     for(auto& c : mCIList)
     {
+        double Weight = 0;
         for(int i = 0; i < c.second.getPList().size(); i++)
         {   
             string net = c.second.getPList()[i]->getNetname();
@@ -391,64 +391,215 @@ string Design::select()
         {
             maxWeight = Weight;
             CI = c.second.getCIName();
-        }
+            //cout <<"current CI is "<<CI<<" with weight "<<Weight<<"."<<endl;
+            }
     }
-    MCList.erase(CI);
-    //delete route
+    mCIList.erase(CI);
+    ADJCIs = CIList[CI].getADJCIs(NList);
+    adjNets = CIList[CI].getADJNets();
+    //delete RList in CI
     for(int i = 0; i<CIList[CI].getPList().size(); i++)
     {
         string net = CIList[CI].getPList()[i]->getNetname();
-        NList.erase(net);
-        CIList[CI].getPList()[i]->Disconnect();
+        //CIList[CI].getPList()[i]->Disconnect();
+        NList[net].Disconnect(CIList[CI],CIList[CI].getPList()[i]->getName());
+        NList[net].delRoute(CIList[CI]); 
     }
     return CI;
 }
 
 vector<tuple<int,int>> Design::placement(string& CI)
 {   
-    vector<tuple<int,int>> p(2); //new places
-    vector<string> c; //all cells connected to CI
-    vector<tuple<int,int>> Vtgarea = CIList[CI].getVtgArea();
-    int mindis = numeric_limits<int>::max();
-    int secmindis = numeric_limits<int>::max();
-    //find CIs connected to the target CI
-    for(int i = 0; i<CIList[CI].getPList().size(); i++)
+    //case1 : CI doesn't have votage area, do BFS
+    if(CIList[CI].hasVtgArea() == false)
     {
-        string net = CIList[CI].getPList()[i]->getNetname();
-        if(net != "")
+        int numinp = 0;
+        vector<tuple<int,int>> p;
+        //vector<vector<tuple<int,int>>> subnet;
+        //cout<<subnet.size()<<endl;
+        int nsize=adjNets.size();
+        vector<vector<tuple<int,int>>> subnet(nsize);
+        vector<vector<tuple<int,int>>> visited(nsize);
+        for(int N=0; N<adjNets.size(); N++)
         {
-            vector<string> CIs = NList[net].getCIs();
-            for(int i = 0; i<CIs.size(); i++)
+            vector<Route*> r = NList[adjNets[N]].getRList();
+            for(int R=0; R<r.size(); R++)
             {
-                auto inc = find(c.begin(), c.end(), CIs[i]);
-                if (inc == c.end())
+                int x1 = get<0>(r[R]->getPoints()[0]);
+                int y1 = get<1>(r[R]->getPoints()[0]);
+                int x2 = get<0>(r[R]->getPoints()[1]);
+                int y2 = get<1>(r[R]->getPoints()[1]);
+                if(x1==x2 && y1==y2)
                 {
-                    c.push_back(CIs[i]);
+                    if (find(subnet[N].begin(), subnet[N].end(), make_tuple(x1, y1))==subnet[N].end()) 
+                    {
+                        subnet[N].push_back(make_tuple(x1,y1));
+                    }
+                }
+                else if(x1==x2)
+                {
+                    if(y1<=y2)
+                    {
+                        for(int i=y1; i<=y2; i++) 
+                        {
+                            if (find(subnet[N].begin(), subnet[N].end(), make_tuple(x1, i))==subnet[N].end())
+                            {
+                                subnet[N].push_back(make_tuple(x1,i));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for(int i=y2; i<=y1; i++) 
+                        {
+                            if (find(subnet[N].begin(), subnet[N].end(), make_tuple(x1, i))==subnet[N].end())
+                            {
+                                subnet[N].push_back(make_tuple(x1,i));
+                            }
+                        }
+                    }
+                }
+                else if(y1==y2)
+                {
+                    if(x1<=x2)
+                    {
+                        for(int i=x1; i<=x2; i++) 
+                        {
+                            if (find(subnet[N].begin(), subnet[N].end(), make_tuple(i, y1))==subnet[N].end())
+                            {
+                                subnet[N].push_back(make_tuple(i,y1));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for(int i=x2; i<=x1; i++) 
+                        {
+                            if (find(subnet[N].begin(), subnet[N].end(), make_tuple(i, y1))==subnet[N].end())
+                            {
+                                subnet[N].push_back(make_tuple(i,y1));
+                            }
+                        }
+                    }
                 }
             }
         }
-    }
-    for(int i = 0; i < Vtgarea.size(); i++)
-    {
-        int dis = 0;
-        int row = get<0>(Vtgarea[i]);
-        int col = get<1>(Vtgarea[i]);
-        for(int i = 0; i<c.size(); i++)
+        while(numinp < 2)
         {
-            dis += abs(row-get<0>(CIList[c[i]].getLocation()));
-            dis += abs(col-get<1>(CIList[c[i]].getLocation()));
-        }
-        if (dis<mindis)
-        {
-            mindis = dis;
-            p[0] = Vtgarea[i];
+            for(int N=0; N<subnet.size(); N++)
+            {
+                int l=0;
+                int loop=subnet[N].size();
+                while(l<loop)
+                {
+                    int x=get<0>(subnet[N][l]);
+                    int y=get<1>(subnet[N][l]);
+                    if(x<RowMax)
+                    {
+                        if(find(subnet[N].begin(), subnet[N].end(), make_tuple(x+1, y))==subnet[N].end())
+                        {
+                            if(find(visited[N].begin(), visited[N].end(), make_tuple(x+1, y))==visited[N].end()) 
+                            {
+                                subnet[N].push_back(make_tuple(x+1, y));
+                                visited[N].push_back(make_tuple(x+1, y));
+                            }
+                        }
+                    }
+                    if(x>RowMin)
+                    {
+                        if(find(subnet[N].begin(), subnet[N].end(), make_tuple(x-1, y))==subnet[N].end())
+                        {
+                            if(find(visited[N].begin(), visited[N].end(), make_tuple(x-1, y))==visited[N].end()) 
+                            {
+                                    subnet[N].push_back(make_tuple(x-1, y));
+                                visited[N].push_back(make_tuple(x-1, y));
+                            }
+                        }
+                    }
+                    if(y<ColMax)
+                    {
+                        if(find(subnet[N].begin(), subnet[N].end(), make_tuple(x, y+1))==subnet[N].end())
+                        {
+                            if(find(visited[N].begin(), visited[N].end(), make_tuple(x, y+1))==visited[N].end()) 
+                            {
+                                subnet[N].push_back(make_tuple(x, y+1));
+                                visited[N].push_back(make_tuple(x, y+1));
+                            }
+                        }
+                    }
+                    if(y>ColMin)
+                        {
+                        if(find(subnet[N].begin(), subnet[N].end(), make_tuple(x, y-1))==subnet[N].end())
+                        {
+                            if(find(visited[N].begin(), visited[N].end(), make_tuple(x, y-1))==visited[N].end()) 
+                            {
+                                subnet[N].push_back(make_tuple(x, y-1));
+                                visited[N].push_back(make_tuple(x, y-1));
+                            }
+                        }
+                    }
+                    visited[N].push_back(make_tuple(x, y));
+                    l++;
+                }
+                subnet[N].erase(subnet[N].begin(), subnet[N].begin()+loop);
             }
-        else if(dis>=mindis && dis<=secmindis)
-        {
-            secmindis = dis;
-            p[1] = Vtgarea[i];
+            for(int i=0; i<visited[0].size(); i++)
+            {
+                if(numinp==2)
+                {
+                    break;
+                }
+                int overlap=1;
+                for(int j=1; j<visited.size(); j++)
+                {
+                    if(find(visited[j].begin(), visited[j].end(), visited[0][i])==visited[j].end())
+                    {
+                        overlap=0;
+                    }
+                }
+                if(overlap==1 && find(p.begin(), p.end(), visited[0][i])==p.end())
+                {
+                    if(true)//supply>demand
+                    {
+                        p.push_back(visited[0][i]);
+                        numinp += 1;
+                    }
+                }
+            }
         }
+        cout<<CI<<" doesn't has votage area."<<endl;
+        return p;
     }
-    return p;
+    //case2 : CI has votage area, find min dis
+    else
+    {
+        vector<tuple<int,int>> p(2); //new places
+        vector<tuple<int,int>> Vtgarea = CIList[CI].getVtgArea();
+        int mindis = numeric_limits<int>::max();
+        int secmindis = numeric_limits<int>::max();
+        vector<string> c = CIList[CI].getADJCIs(NList); //find CIs connected to CI
+        for(int i = 0; i < Vtgarea.size(); i++)
+        {
+            int dis = 0;
+            int row = get<0>(Vtgarea[i]);
+            int col = get<1>(Vtgarea[i]);
+            for(int i = 0; i<c.size(); i++)
+            {
+                dis += abs(row-get<0>(CIList[c[i]].getLocation()));
+                dis += abs(col-get<1>(CIList[c[i]].getLocation()));
+            }
+            if (dis<mindis)
+            {
+                mindis = dis;
+                p[0] = Vtgarea[i];
+            }
+            else if(dis>=mindis && dis<=secmindis)
+            {
+                secmindis = dis;
+                p[1] = Vtgarea[i];
+            }
+        }
+        return p;
+    }
 }
 

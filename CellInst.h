@@ -3,9 +3,12 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <map>
+#include <algorithm>
 #include "Pin.h"
 #include "Blkg.h"
 #include "MCell.h"
+#include "Net.h"
 
 using namespace std;
 
@@ -22,6 +25,7 @@ private:
     vector<Blkg*> BList;
     vector<tuple<int,int>> VtgArea; // There are better data structures
     int VtgAreaGGridCount;
+    vector<string> CIs;
 
 public:
     CellInst();
@@ -30,8 +34,11 @@ public:
     vector<Pin*> getPList();
     void setVtgArea(int, int);
     string getCIName();
+    bool hasVtgArea();
     vector<tuple<int,int>> getVtgArea();
     tuple<int,int> getLocation();
+    vector<string> getADJCIs(map<string,Net>);
+    vector<string> getADJNets();
 };
 
 #endif // CELLINST_H
