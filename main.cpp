@@ -21,21 +21,20 @@ int main(int argc, char** argv)
         Design D = Design();
         D.readFile(argv[1]);
         string s = D.select();
-        cout << "the selected cell is "<< s <<endl;
+        cout << "The selected cell is " << s << "." << endl;
         vector<tuple<int, int>> c = D.placement(s);
         for (int i = 0; i<2; i++)
         {
             if (i==0)
             {
-                cout << "the first new place of "<<s<<" is " << get<0>(c[i]) << get<1>(c[i]) <<"."<<endl;
+                cout << "The first new place of " << s << " is (" << get<0>(c[i]) << "," << get<1>(c[i]) << ")." << endl;
             }
             else if (i==1)
             {
-                cout << "the second new place of "<<s<<" is " << get<0>(c[i]) << get<1>(c[i]) <<"."<<endl;
-            }
-            
+                cout << "The second new place of " << s << " is (" << get<0>(c[i]) << "," << get<1>(c[i]) << ")." << endl;
+            }   
         }
-        
+        D.routing(s,c[0]);
     }
     return 1;
 }

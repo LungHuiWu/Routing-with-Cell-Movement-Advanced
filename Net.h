@@ -32,7 +32,7 @@ public:
     string getName();
     double getWeight();
     vector<string> getCIs();
-    vector<Route*> delRoute(CellInst, tuple<int, int>, map<string,CellInst>);
+    void delRoute(CellInst, tuple<int, int>, map<string,CellInst>, vector<tuple<string,string,string>>&);
     vector<Route*> getRList();
 
 };

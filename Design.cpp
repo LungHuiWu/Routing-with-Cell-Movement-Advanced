@@ -374,6 +374,7 @@ void Design::readRoute(string& str)
 
 string Design::select()
 {   
+    cout << "Start selecting..." << endl;
     double maxWeight = 0;
     string CI;
     for(auto& c : mCIList)
@@ -392,19 +393,10 @@ string Design::select()
             maxWeight = Weight;
             CI = c.second.getCIName();
             //cout <<"current CI is "<<CI<<" with weight "<<Weight<<"."<<endl;
-            }
+        }
     }
-    mCIList.erase(CI);
-    ADJCIs = CIList[CI].getADJCIs(NList);
-    adjNets = CIList[CI].getADJNets();
-    //delete Routes conntcted to CI
-    for(int i = 0; i<CIList[CI].getPList().size(); i++)
-    {
-        string net = CIList[CI].getPList()[i]->getNetname();
-        //CIList[CI].getPList()[i]->Disconnect();
-        NList[net].Disconnect(CIList[CI],CIList[CI].getPList()[i]->getName());
-        delRList = NList[net].delRoute(CIList[CI], CIList[CI].getLocation(), CIList); //Routes which were deleted
-    }
+    ADJCIs = CIList[CI].getADJCIs(NList); // All CIs connected to CI
+    adjNets = CIList[CI].getADJNets(); // All nets connected to CI
     return CI;
 }
 
@@ -630,12 +622,26 @@ vector<tuple<int,int>> Design::placement(string& CI)
     }
 }
 
-void Design::routing(string& newCI, tuple<int, int> new_loc, vector<string>& net)
+void Design::routing(string& CI, tuple<int, int> new_loc)
 {
-    for(size_t i=0; i<net.size();++i)
+    cout << "Start routing..." << endl;
+    mCIList.erase(CI);
+    ADJCIs = CIList[CI].getADJCIs(NList); // All CIs connected to CI
+    adjNets = CIList[CI].getADJNets(); // All nets connected to CI
+    vector<tuple<string,string,string>> RcntTable; // vector of tuples that stores each CI and Pin connected to CI in corresponding net
+    //delete Routes conntcted to CI
+    for(int i = 0; i<CIList[CI].getPList().size(); i++)
     {
-        vector<string> allCI = NList[net[i]].getCIs();
+        string net = CIList[CI].getPList()[i]->getNetname();
+        //CIList[CI].getPList()[i]->Disconnect();
+        NList[net].Disconnect(CIList[CI],CIList[CI].getPList()[i]->getName());
+        NList[net].delRoute(CIList[CI], CIList[CI].getLocation(), CIList, RcntTable); //Routes which were deleted
     }
+    for(int i = 0; i<RcntTable.size(); ++i)
+    {
+        cout << "(" << get<0>(RcntTable[i]) << "," << get<1>(RcntTable[i]) << "," << get<2>(RcntTable[i]) << ")" << endl;
+    }
+    cout << "Routing finished." << endl;
     return;
 }
 
