@@ -4,6 +4,7 @@
         "chrono": "cpp",
         "complex": "cpp",
         "algorithm": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "tuple": "cpp"
     }
 }

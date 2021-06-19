@@ -633,13 +633,15 @@ void Design::routing(string& CI, tuple<int, int> new_loc)
     for(int i = 0; i<CIList[CI].getPList().size(); i++)
     {
         string net = CIList[CI].getPList()[i]->getNetname();
+        cout << NList[net].getRList().size() << endl;
         //CIList[CI].getPList()[i]->Disconnect();
         NList[net].Disconnect(CIList[CI],CIList[CI].getPList()[i]->getName());
         NList[net].delRoute(CIList[CI], CIList[CI].getLocation(), CIList, RcntTable); //Routes which were deleted
+        cout << NList[net].getRList().size() << endl;
     }
-    for(int i = 0; i<RcntTable.size(); ++i)
+    for(int k = 0; k<RcntTable.size(); ++k)
     {
-        cout << "(" << get<0>(RcntTable[i]) << "," << get<1>(RcntTable[i]) << "," << get<2>(RcntTable[i]) << ")" << endl;
+        cout << "(" << get<0>(RcntTable[k]) << "," << get<1>(RcntTable[k]) << "," << get<2>(RcntTable[k]) << ")" << endl;
     }
     cout << "Routing finished." << endl;
     return;

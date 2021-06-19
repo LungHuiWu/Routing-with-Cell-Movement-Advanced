@@ -18,6 +18,7 @@ public:
     ~Blkg();
     Layer getLayer();
     double getDemand();
+    string getName();
 };
 
 #endif // BLKG_H

@@ -49,3 +49,8 @@ string Pin::getNetname()
     return Net;
 }
 
+Layer Pin::getLayer()
+{
+    return Lyr;
+}
+

@@ -24,7 +24,7 @@ public:
     void Connect(string);
     void Disconnect();
     string getName();
-    
+    Layer getLayer();
 };
 
 #endif // PIN_H

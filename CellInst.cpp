@@ -17,8 +17,16 @@ CellInst::CellInst(MCell mc, string instname, int row, int col, bool mov)
     MCName = mc.getName();
     Row = row;
     Col = col;
-    PList = mc.getPList();
-    BList = mc.getBList();
+    PList.clear();
+    BList.clear();
+    for (int i=0; i<mc.getPList().size();++i)
+    {
+        PList.push_back(new Pin(mc.getPList()[i]->getName(), mc.getPList()[i]->getLayer(), MCName));
+    }
+    for (int i=0; i<mc.getBList().size();++i)
+    {
+        BList.push_back(new Blkg(mc.getBList()[i]->getName(), mc.getBList()[i]->getLayer(), mc.getBList()[i]->getDemand(), MCName));
+    }
     Movable = mov;
     VtgAreaGGridCount = 0;
 }

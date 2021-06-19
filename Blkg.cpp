@@ -30,3 +30,8 @@ double Blkg::getDemand()
 {
     return Demand;
 }
+
+string Blkg::getName()
+{
+    return Name;
+}
