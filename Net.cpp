@@ -87,20 +87,20 @@ void Net::delRoute(CellInst c, tuple<int, int> p, map<string,CellInst> CIList, v
     for(int i= 0; i<RList.size(); ++i)
     {
         bool cont = true;
-        if(RList[i]->getPoints()[0]==p)
+        if(make_tuple(get<0>(RList[i]->getPoints()[0]), get<1>(RList[i]->getPoints()[0]))==p)
         {
             R.push_back(RList[i]);
-            if (RList[i]->getPoints()[0]!=RList[i]->getPoints()[1])
+            if (get<2>(RList[i]->getPoints()[0])==get<2>(RList[i]->getPoints()[1]))
             {
                 for(int k=0; k<conCIs.size(); k++)
                 {
                     if(CIList[conCIs[k]].getLocation() == RList[i]->getPoints()[1])
                     {
-                        cont = false;
                         for (int j=0;j<CIList[conCIs[k]].getPList().size();++j)
                         {
-                            if(CIList[conCIs[k]].getPList()[j]->getNetname() == Name)
+                            if(CIList[conCIs[k]].getPList()[j]->getNetname() == Name && CIList[conCIs[k]].getPList()[j]->getLayer().getIdx()==get<2>(RList[i]->getPoints()[1]))
                             {
+                                cont = false;
                                 RT.push_back(make_tuple(Name, conCIs[k], CIList[conCIs[k]].getPList()[j]->getName()));
                                 CIList[conCIs[k]].getPList()[j]->Disconnect();
                             }
@@ -108,15 +108,15 @@ void Net::delRoute(CellInst c, tuple<int, int> p, map<string,CellInst> CIList, v
                     }
                 }
             }
-            else cont = false;
-            tuple<int,int> temp = RList[i]->getPoints()[1];
+            else cont = false; // here
+            tuple<int,int> temp = make_tuple(get<0>(RList[i]->getPoints()[1]), get<1>(RList[i]->getPoints()[1]));
             RList.erase(RList.begin()+i);
             if (cont)
             {
                 delRoute(c, temp, CIList, RT);    
             }
         }
-        else if (RList[i]->getPoints()[1]==p)
+        else if (RList[i]->getPoints()[1]==p) // copy upper part
         {
             R.push_back(RList[i]);
             if (RList[i]->getPoints()[0]!=RList[i]->getPoints()[1])
@@ -125,7 +125,7 @@ void Net::delRoute(CellInst c, tuple<int, int> p, map<string,CellInst> CIList, v
                 {
                     if(CIList[conCIs[k]].getLocation() == RList[i]->getPoints()[0])
                     {
-                        cont = false;
+                        cont = false; // here
                         // disconnect CI at the other end
                         // Risk: maybe there is a net using more than one pin in one CI, this alg. will disconnect all pins in the net  on CI
                         for (int j=0;j<CIList[conCIs[k]].getPList().size();++j)
@@ -140,7 +140,7 @@ void Net::delRoute(CellInst c, tuple<int, int> p, map<string,CellInst> CIList, v
                 }
             }
             else cont = false;
-            tuple<int,int> temp = RList[i]->getPoints()[0];
+            tuple<int,int> temp = make_tuple(get<0>(RList[i]->getPoints()[0]), get<1>(RList[i]->getPoints()[0]));
             RList.erase(RList.begin()+i);
             if (cont)
             {

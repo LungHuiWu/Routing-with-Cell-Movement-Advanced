@@ -9,7 +9,7 @@ using namespace std;
 class Route
 {
 private:
-    vector<tuple<int, int>> p; //the vector include start point and end point
+    vector<tuple<int, int, int>> p; //the vector include start point and end point
 public:
     int RowS, ColS, LyrS;
     int RowE, ColE, LyrE;
@@ -19,7 +19,7 @@ public:
     Route();
     Route(int, int, int, int, int, int, string);
     ~Route();
-    vector<tuple<int, int>> getPoints();
+    vector<tuple<int, int, int>> getPoints();
 };
 
 #endif // ROUTE_H
