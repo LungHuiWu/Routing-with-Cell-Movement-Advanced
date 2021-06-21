@@ -81,7 +81,7 @@ vector<string> Net::getCIs()
 {
     return conCIs;
 }
-
+/*
 void Net::delRoute(CellInst c, tuple<int, int> p, map<string,CellInst> CIList, vector<tuple<string,string,string>>& RT)
 {
     for(int i= 0; i<RList.size(); ++i)
@@ -148,8 +148,64 @@ void Net::delRoute(CellInst c, tuple<int, int> p, map<string,CellInst> CIList, v
             }
         }
     }
-    return;
 }
+*/
+void Net::delRoute(CellInst c, tuple<int, int, int> p, map<string,CellInst> CIList)
+{
+    for(int i= 0; i<RList.size(); )
+    {
+        if(RList[i]->getPoints()[0] == p)
+        {
+            tuple<int, int, int> p2 = RList[i]->getPoints()[1];
+            R.push_back(RList[i]);
+            RList.erase(RList.begin()+i);
+            for(int j=0; j<conCIs.size(); j++)
+            {
+                for(int k=0; k<CIList[conCIs[j]].getPList().size(); k++)
+                {
+                    int lyr = CIList[conCIs[j]].getPList()[k]->getLayer().getIdx();
+                    tuple<int, int, int> CIp = make_tuple(get<0>(CIList[conCIs[j]].getLocation()), get<1>(CIList[conCIs[j]].getLocation()), lyr);
+                    if(p2 == CIp)
+                    {
+                        delCI.push_back(conCIs[j]);
+                        return;
+                    }
+                }
+                
+            }
+            delRoute(c, RList[i]->getPoints()[1], CIList);    
+            return;
+        }
+        else if (RList[i]->getPoints()[1] == p)
+        {
+            tuple<int, int, int> p2 = RList[i]->getPoints()[0];
+            R.push_back(RList[i]);
+            RList.erase(RList.begin()+i);
+            for(int j=0; j<conCIs.size(); j++)
+            {
+                for(int k=0; k<CIList[conCIs[j]].getPList().size(); k++)
+                {
+                    int lyr = CIList[conCIs[j]].getPList()[k]->getLayer().getIdx();
+                    tuple<int, int, int> CIp = make_tuple(get<0>(CIList[conCIs[j]].getLocation()), get<1>(CIList[conCIs[j]].getLocation()), lyr);
+                    if(p2 == CIp)
+                    {
+                        delCI.push_back(conCIs[j]);
+                        return;
+                    }
+                }
+                
+            }
+            delRoute(c, RList[i]->getPoints()[0], CIList);    
+            return;
+        }
+        else
+        {
+            i ++ ;
+            if (i>=RList.size()) return;
+        }
+    }
+}
+
 
 vector<Route*> Net::getRList()
 {

@@ -32,8 +32,9 @@ public:
     string getName();
     double getWeight();
     vector<string> getCIs();
-    void delRoute(CellInst, tuple<int, int>, map<string,CellInst>, vector<tuple<string,string,string>>&);
+    void delRoute(CellInst, tuple<int, int, int>, map<string,CellInst>);
     vector<Route*> getRList();
+    vector<string> delCI; //CIs which is disconnected during delroute
 
 };
 

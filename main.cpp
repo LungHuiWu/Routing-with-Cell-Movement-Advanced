@@ -34,7 +34,7 @@ int main(int argc, char** argv)
                 cout << "The second new place of " << s << " is (" << get<0>(c[i]) << "," << get<1>(c[i]) << ")." << endl;
             }   
         }
-        D.routing(s,c[0]);
+        //D.routing(s,c[0]);
     }
     return 1;
 }

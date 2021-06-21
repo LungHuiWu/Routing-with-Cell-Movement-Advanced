@@ -397,6 +397,17 @@ string Design::select()
     }
     ADJCIs = CIList[CI].getADJCIs(NList); // All CIs connected to CI
     adjNets = CIList[CI].getADJNets(); // All nets connected to CI
+
+    for(int i = 0; i<CIList[CI].getPList().size(); i++)
+    {
+        tuple<int, int, int> p = make_tuple(get<0>(CIList[CI].getLocation()), get<1>(CIList[CI].getLocation()), CIList[CI].getPList()[i]->getLayer().getIdx());
+        string net = CIList[CI].getPList()[i]->getNetname();
+        cout << NList[net].getRList().size() << endl;
+        NList[net].Disconnect(CIList[CI],CIList[CI].getPList()[i]->getName());
+        NList[net].delRoute(CIList[CI], p, CIList); //Routes which were deleted
+        cout << NList[net].getRList().size() << endl;
+    }
+
     return CI;
 }
 
@@ -412,7 +423,7 @@ vector<tuple<int,int>> Design::placement(string& CI)
         int nsize=adjNets.size();
         vector<vector<tuple<int,int>>> subnet(nsize);
         vector<vector<tuple<int,int>>> visited(nsize);
-        for(int N=0; N<adjNets.size(); N++)
+        for(int N=0; N<subnet.size(); N++)
         {
             vector<Route*> r = NList[adjNets[N]].getRList();
             for(int R=0; R<r.size(); R++)
@@ -535,40 +546,48 @@ vector<tuple<int,int>> Design::placement(string& CI)
                 }
                 subnet[N].erase(subnet[N].begin(), subnet[N].begin()+loop);
             }
-            for(int i=0; i<visited[0].size(); i++)
+            int nenet = 0;
+            for(int i=0; i<visited.size(); i++)
             {
-                int overlap=1;
-                int pointvalid = 1;
-                int row = get<0>(visited[0][i]);
-                int col = get<1>(visited[0][i]);
+                if(visited[i].size()!=0)
+                {
+                    nenet = i;
+                    break;
+                }
+            }
+            for(int i=0; i<visited[nenet].size(); i++)
+            {
+                bool overlap=true;
+                bool pointvalid = true;
+                int row = get<0>(visited[nenet][i]);
+                int col = get<1>(visited[nenet][i]);
                 if(numinp==2)
                 {
                     break;
                 }
-                for(int i=0; i<CIList[CI].getBList().size(); i++)
+                
+                for(int k=0; k<CIList[CI].getBList().size(); k++)
                 {
-                    int lyr=CIList[CI].getBList()[i]->getLayer().getIdx()-1;
-                    if(GGridList[row][col][lyr].getSupply()<CIList[CI].getBList()[i]->getDemand())
+                    int lyr=CIList[CI].getBList()[k]->getLayer().getIdx();
+                    if(GGridList[row-1][col-1][lyr-1].getSupply()<=CIList[CI].getBList()[k]->getDemand())
                     {
-                        pointvalid = 0;
+                        pointvalid = false;
                     }
                 }
-                if(pointvalid==0) continue; //this point is not valid 
+                
+                if(pointvalid==false) continue; //this point is not valid 
                 for(int j=1; j<visited.size(); j++)
                 {
-                    if(find(visited[j].begin(), visited[j].end(), visited[0][i])==visited[j].end())
+                    if(find(visited[j].begin(), visited[j].end(), visited[nenet][i])==visited[j].end())
                     {
-                        overlap=0;
+                        if(visited[j].size()!=0) overlap=false;
+                        
                     }
                 }
-                if(overlap==1 && find(p.begin(), p.end(), visited[0][i])==p.end())
+                if(overlap==true && find(p.begin(), p.end(), visited[nenet][i])==p.end())
                 {
-
-                    if(true)//supply>demand
-                    {
-                        p.push_back(visited[0][i]);
-                        numinp += 1;
-                    }
+                    p.push_back(visited[nenet][i]);
+                    numinp += 1;
                 }
             }
         }
@@ -588,16 +607,16 @@ vector<tuple<int,int>> Design::placement(string& CI)
             int dis = 0;
             int row = get<0>(Vtgarea[i]);
             int col = get<1>(Vtgarea[i]);
-            int pointvalid = 1;
+            bool pointvalid = true;
             for(int i=0; i<CIList[CI].getBList().size(); i++)
             {
-                int lyr=CIList[CI].getBList()[i]->getLayer().getIdx()-1;
-                if(GGridList[row][col][lyr].getSupply()<CIList[CI].getBList()[i]->getDemand())
+                int lyr=CIList[CI].getBList()[i]->getLayer().getIdx();
+                if(GGridList[row-1][col-1][lyr-1].getSupply()<=CIList[CI].getBList()[i]->getDemand())
                 {
-                    pointvalid = 0;
+                    pointvalid = false;
                 }
             }
-            if(pointvalid==0) continue; //this point is not valid 
+            if(pointvalid==false) continue; //this point is not valid 
             for(int i = 0; i<c.size(); i++)
             {
                 dis += abs(row-get<0>(CIList[c[i]].getLocation()));
@@ -632,11 +651,13 @@ void Design::routing(string& CI, tuple<int, int> new_loc)
     //delete Routes conntcted to CI
     for(int i = 0; i<CIList[CI].getPList().size(); i++)
     {
+        tuple<int, int, int> p = make_tuple(get<0>(CIList[CI].getLocation()), get<1>(CIList[CI].getLocation()), CIList[CI].getPList()[i]->getLayer().getIdx());
         string net = CIList[CI].getPList()[i]->getNetname();
         cout << NList[net].getRList().size() << endl;
         //CIList[CI].getPList()[i]->Disconnect();
         NList[net].Disconnect(CIList[CI],CIList[CI].getPList()[i]->getName());
-        NList[net].delRoute(CIList[CI], CIList[CI].getLocation(), CIList, RcntTable); //Routes which were deleted
+        NList[net].delRoute(CIList[CI], p, CIList); //Routes which were deleted
+        //NList[net].delRoute(CIList[CI],CIList[CI].getLocation(), CIList, RcntTable);
         cout << NList[net].getRList().size() << endl;
     }
     for(int k = 0; k<RcntTable.size(); ++k)
