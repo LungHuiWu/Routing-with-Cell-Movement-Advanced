@@ -28,6 +28,10 @@ GGrid::~GGrid()
 void GGrid::adjustSupply(int i)
 {
     supply += i;
+    if (supply<0)
+    {
+        cout << "???????????????" << endl;
+    }
 }
 
 int GGrid::getSupply()
