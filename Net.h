@@ -35,7 +35,7 @@ public:
     void delRoute(CellInst, tuple<int, int, int>, map<string,CellInst>);
     vector<Route*> getRList();
     vector<string> delCI; //CIs which is disconnected during delroute
-
+    vector<Route*> getR();
 };
 
 #endif // NET_H

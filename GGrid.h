@@ -13,7 +13,7 @@ private:
     int rowIdx, colIdx, LyrIdx;
     Layer* Lyr;
     int supply;
-    map <string,bool> NetLink;
+    map <string,int> NetLink;
 public:
     GGrid();
     GGrid(int, int, Layer*);
@@ -22,6 +22,7 @@ public:
     int getSupply();
     void addNet(string);
     void linkNet(string);
+    void unlinkNet(string);
 };
 
 #endif // GGRID_H

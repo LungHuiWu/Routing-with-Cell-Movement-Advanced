@@ -48,6 +48,8 @@ public:
     vector<tuple<int,int>> placement(string&);
     void routing(string&, tuple<int, int>);
     double calculate(vector<Route*>&, double);
+    void addRoute(int, int, int, int, int, int, string);
+    void delRoute(Route*, string);
 };
 
 #endif // DESIGN_H

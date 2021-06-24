@@ -379,7 +379,57 @@ void Design::readRoute(string& str)
         in >> s; int l2 = stoi(s);
         in >> s; string n = s;
         NList[n].addRoute(r1,c1,l1,r2,c2,l2);
-        if (r1 < r2)
+        addRoute(r1,r2,c1,c2,l1,l2,n); // GGrid update supply
+        cout << "Route added to Net " << n << "." << endl;
+    }
+}
+
+string Design::select()
+{   
+    cout << "Start selecting..." << endl;
+    double maxWeight = 0;
+    string CI;
+    for(auto& c : mCIList)
+    {
+        double Weight = 0;
+        for(int i = 0; i < c.second.getPList().size(); i++)
+        {   
+            string net = c.second.getPList()[i]->getNetname();
+            if(net != "")
+            {
+                Weight += NList[net].getWeight();
+            }
+        }
+        if(Weight >= maxWeight)
+        {
+            maxWeight = Weight;
+            CI = c.second.getCIName();
+            //cout <<"current CI is "<<CI<<" with weight "<<Weight<<"."<<endl;
+        }
+    }
+    ADJCIs = CIList[CI].getADJCIs(NList); // All CIs connected to CI
+    adjNets = CIList[CI].getADJNets(); // All nets connected to CI
+
+    for(int i = 0; i<CIList[CI].getPList().size(); i++)
+    {
+        tuple<int, int, int> p = make_tuple(get<0>(CIList[CI].getLocation()), get<1>(CIList[CI].getLocation()), CIList[CI].getPList()[i]->getLayer().getIdx());
+        string net = CIList[CI].getPList()[i]->getNetname();
+        cout << NList[net].getRList().size() << endl;
+        NList[net].Disconnect(CIList[CI],CIList[CI].getPList()[i]->getName());
+        NList[net].delRoute(CIList[CI], p, CIList); //Routes which were deleted
+        for(auto& r : NList[net].getR())
+        {
+            delRoute(r,net);
+        }
+        cout << NList[net].getRList().size() << endl;
+    }
+
+    return CI;
+}
+
+void Design::addRoute(int r1, int r2, int c1, int c2, int l1, int l2, string n)
+{
+    if (r1 < r2)
         {
             for (int i=r1;i<=r2;++i)
             {
@@ -425,47 +475,59 @@ void Design::readRoute(string& str)
         {
             cout << "???" << endl;
         }
-        cout << "Route added to Net " << n << "." << endl;
-    }
 }
 
-string Design::select()
-{   
-    cout << "Start selecting..." << endl;
-    double maxWeight = 0;
-    string CI;
-    for(auto& c : mCIList)
-    {
-        double Weight = 0;
-        for(int i = 0; i < c.second.getPList().size(); i++)
-        {   
-            string net = c.second.getPList()[i]->getNetname();
-            if(net != "")
+void Design::delRoute(Route* r, string n)
+{
+    int r1 = r->RowS; int r2 = r->RowE;
+    int c1 = r->ColS; int c2 = r->ColE;
+    int l1 = r->LyrS; int l2 = r->LyrE;
+    if (r1 < r2)
+        {
+            for (int i=r1;i<=r2;++i)
             {
-                Weight += NList[net].getWeight();
+                GGridList[i-1][c1-1][l1-1].unlinkNet(NList[n].getName());
             }
         }
-        if(Weight >= maxWeight)
+        else if (r1 > r2)
         {
-            maxWeight = Weight;
-            CI = c.second.getCIName();
-            //cout <<"current CI is "<<CI<<" with weight "<<Weight<<"."<<endl;
+            for (int i=r2;i<=r1;++i)
+            {
+                GGridList[i-1][c1-1][l1-1].unlinkNet(NList[n].getName());
+            }
         }
-    }
-    ADJCIs = CIList[CI].getADJCIs(NList); // All CIs connected to CI
-    adjNets = CIList[CI].getADJNets(); // All nets connected to CI
-
-    for(int i = 0; i<CIList[CI].getPList().size(); i++)
-    {
-        tuple<int, int, int> p = make_tuple(get<0>(CIList[CI].getLocation()), get<1>(CIList[CI].getLocation()), CIList[CI].getPList()[i]->getLayer().getIdx());
-        string net = CIList[CI].getPList()[i]->getNetname();
-        cout << NList[net].getRList().size() << endl;
-        NList[net].Disconnect(CIList[CI],CIList[CI].getPList()[i]->getName());
-        NList[net].delRoute(CIList[CI], p, CIList); //Routes which were deleted
-        cout << NList[net].getRList().size() << endl;
-    }
-
-    return CI;
+        else if (c1 < c2)
+        {
+            for (int i=c1;i<=c2;++i)
+            {
+                GGridList[r1-1][i-1][l1-1].unlinkNet(NList[n].getName());
+            }
+        }
+        else if (c1 > c2)
+        {
+            for (int i=c2;i<=c1;++i)
+            {
+                GGridList[r1-1][i-1][l1-1].unlinkNet(NList[n].getName());
+            }
+        }
+        else if (l1 < l2)
+        {
+            for (int i=l1;i<=l2;++i)
+            {
+                GGridList[r1-1][c1-1][i-1].unlinkNet(NList[n].getName());
+            }
+        }
+        else if (l1 > l2)
+        {
+            for (int i=l2;i<=l1;++i)
+            {
+                GGridList[r1-1][c1-1][i-1].unlinkNet(NList[n].getName());
+            }
+        }
+        else
+        {
+            cout << "???" << endl;
+        }
 }
 
 vector<tuple<int,int>> Design::placement(string& CI)

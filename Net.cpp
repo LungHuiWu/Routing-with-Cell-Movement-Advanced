@@ -81,6 +81,10 @@ vector<string> Net::getCIs()
 {
     return conCIs;
 }
+vector<Route*> Net::getR()
+{
+    return R;
+}
 /*
 void Net::delRoute(CellInst c, tuple<int, int> p, map<string,CellInst> CIList, vector<tuple<string,string,string>>& RT)
 {

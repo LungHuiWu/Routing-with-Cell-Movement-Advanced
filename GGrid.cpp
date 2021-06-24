@@ -37,14 +37,27 @@ int GGrid::getSupply()
 
 void GGrid::addNet(string s)
 {
-    NetLink[s] = false;
+    NetLink[s] = 0;
 }
 
 void GGrid::linkNet(string s)
 {
-    if (NetLink[s]==false)
+    if (NetLink[s]==0)
     {
         supply -= 1;
     }
-    NetLink[s] = true;
+    NetLink[s] += 1;
+}
+
+void GGrid::unlinkNet(string s)
+{
+    if (NetLink[s] == 1)
+    {
+        supply += 1;
+    }
+    if (NetLink[s]<0)
+    {
+        cout << "???" << endl;
+    }
+    NetLink[s] -= 1;
 }
