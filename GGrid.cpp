@@ -18,6 +18,7 @@ GGrid::GGrid(int row, int col, Layer* layer)
     Lyr = layer;
     LyrIdx = Lyr->getIdx();
     supply = Lyr->getsupply();
+    NetLink.clear();
 }
 
 GGrid::~GGrid()
@@ -32,4 +33,18 @@ void GGrid::adjustSupply(int i)
 int GGrid::getSupply()
 {
     return supply;
+}
+
+void GGrid::addNet(string s)
+{
+    NetLink[s] = false;
+}
+
+void GGrid::linkNet(string s)
+{
+    if (NetLink[s]==false)
+    {
+        supply -= 1;
+    }
+    NetLink[s] = true;
 }

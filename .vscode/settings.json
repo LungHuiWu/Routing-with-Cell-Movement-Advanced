@@ -5,6 +5,7 @@
         "complex": "cpp",
         "algorithm": "cpp",
         "iostream": "cpp",
-        "tuple": "cpp"
+        "tuple": "cpp",
+        "ostream": "cpp"
     }
 }

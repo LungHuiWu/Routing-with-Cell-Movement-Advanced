@@ -260,6 +260,10 @@ void Design::readCellInst(string& str)
             mCIList.insert(pair<string, CellInst> (name, CellInst(MCList[mcname], name, r, c, mov)));
         }
         CIList.insert(pair<string, CellInst> (name, CellInst(MCList[mcname], name, r, c, mov)));
+        for (int i=0;i<MCList[mcname].getBList().size();++i)
+        {
+            GGridList[r-1][c-1][MCList[mcname].getBList()[i]->getLayer().getIdx()-1].adjustSupply(-MCList[mcname].getBList()[i]->getDemand());
+        }
         cout << "CellInst " << name << " added to the design at (" << r << ", " << c << ")." << endl;
         // NOTE: The connection between CellInst & GGrids has not bean implement yet!!!
     }
@@ -279,6 +283,13 @@ string Design::readNet(string& str, string& Nname)
     else if(s == "Net")
     {
         in >> s; string name = s;
+        for (int i=0;i<NumRow;++i){
+            for (int j=0;j<NumCol;++j){
+                for (int k=0;k<NumLyr;++k){
+                    GGridList[i][j][k].addNet(name);
+                }
+            }
+        }
         in >> s; int p = stoi(s);
         in >> s; int min;
         if (s != "NoCstr") min = LList[s]->getIdx();
@@ -368,6 +379,52 @@ void Design::readRoute(string& str)
         in >> s; int l2 = stoi(s);
         in >> s; string n = s;
         NList[n].addRoute(r1,c1,l1,r2,c2,l2);
+        if (r1 < r2)
+        {
+            for (int i=r1;i<=r2;++i)
+            {
+                GGridList[i-1][c1-1][l1-1].linkNet(NList[n].getName());
+            }
+        }
+        else if (r1 > r2)
+        {
+            for (int i=r2;i<=r1;++i)
+            {
+                GGridList[i-1][c1-1][l1-1].linkNet(NList[n].getName());
+            }
+        }
+        else if (c1 < c2)
+        {
+            for (int i=c1;i<=c2;++i)
+            {
+                GGridList[r1-1][i-1][l1-1].linkNet(NList[n].getName());
+            }
+        }
+        else if (c1 > c2)
+        {
+            for (int i=c2;i<=c1;++i)
+            {
+                GGridList[r1-1][i-1][l1-1].linkNet(NList[n].getName());
+            }
+        }
+        else if (l1 < l2)
+        {
+            for (int i=l1;i<=l2;++i)
+            {
+                GGridList[r1-1][c1-1][i-1].linkNet(NList[n].getName());
+            }
+        }
+        else if (l1 > l2)
+        {
+            for (int i=l2;i<=l1;++i)
+            {
+                GGridList[r1-1][c1-1][i-1].linkNet(NList[n].getName());
+            }
+        }
+        else
+        {
+            cout << "???" << endl;
+        }
         cout << "Route added to Net " << n << "." << endl;
     }
 }
