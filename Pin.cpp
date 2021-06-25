@@ -36,7 +36,6 @@ void Pin::Connect(string n)
 void Pin::Disconnect()
 {
     Connected = false;
-    Net = "";
 }
 
 string Pin::getName()

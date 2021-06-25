@@ -36,6 +36,9 @@ public:
     vector<Route*> getRList();
     vector<string> delCI; //CIs which is disconnected during delroute
     vector<Route*> getR();
+    int getMinLyr();
+    void addtoRList(vector<Route*>);
+    void clearR();
 };
 
 #endif // NET_H

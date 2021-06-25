@@ -20,6 +20,7 @@ private:
     int NumRow, NumCol;
     int NumLyr, NumNonDefaultSupplyGGrid, NumMCell, NumCellInst, NumNet, NumVtgArea, NumRoute;
     map<string,Layer*> LList;
+    map<int,Layer*> LList_idx;
     GGrid*** GGridList;
     map<string,MCell> MCList;
     map<string,CellInst> CIList;
@@ -46,10 +47,20 @@ public:
     // Algorithms //
     string select();
     vector<tuple<int,int>> placement(string&);
-    void routing(string&, tuple<int, int>);
-    double calculate(vector<Route*>&, double);
+    double routing(string&, tuple<int, int>);
+    double calculate(vector<Route*>, double);
     void addRoute(int, int, int, int, int, int, string);
     void delRoute(Route*, string);
+    void clearGGridstep();
+    void clearGGridCovered();
+    void clearAncestor();
+    void setGGridCovered(Route*,int);
+    void setCICovered(vector<Route*>&,int,int,int,int);
+    void showCovered();
+    void showColor();
+    void showStep();
+    vector<Route*> mst(int,int,int,int,int,string);
+    void setWhite();
 };
 
 #endif // DESIGN_H

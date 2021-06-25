@@ -6,6 +6,8 @@
         "algorithm": "cpp",
         "iostream": "cpp",
         "tuple": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "queue": "cpp",
+        "random": "cpp"
     }
 }

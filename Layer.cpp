@@ -32,6 +32,10 @@ int Layer::getIdx(){
 double Layer::getPF(){
     return Powerfactor;
 }
+char Layer::getDir()
+{
+    return Dir;
+}
 
 Layer& Layer::operator = (const Layer& l)
 {

@@ -39,6 +39,11 @@ void Net::connect(CellInst c, string pinname) //may be considered with the conne
     }
 }
 
+void Net::clearR()
+{
+    R.clear();
+}
+
 void Net::Disconnect(CellInst c, string pinname) //may be considered with the connect in pin
 {
     vector<Pin*> p = c.getPList();
@@ -84,6 +89,10 @@ vector<string> Net::getCIs()
 vector<Route*> Net::getR()
 {
     return R;
+}
+int Net::getMinLyr()
+{
+    return MinLayer;
 }
 /*
 void Net::delRoute(CellInst c, tuple<int, int> p, map<string,CellInst> CIList, vector<tuple<string,string,string>>& RT)
@@ -216,3 +225,7 @@ vector<Route*> Net::getRList()
     return RList;
 }
 
+void Net::addtoRList(vector <Route*> r)
+{
+    RList.insert(RList.end(),r.begin(),r.end());
+}

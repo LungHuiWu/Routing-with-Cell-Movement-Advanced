@@ -2,6 +2,7 @@
 #define GGRID_H
 #include <string>
 #include <vector>
+#include <tuple>
 #include <map>
 #include "Layer.h"
 
@@ -23,6 +24,10 @@ public:
     void addNet(string);
     void linkNet(string);
     void unlinkNet(string);
+    int Covered;
+    int Step;
+    tuple<int,int,int> Ancestor;
+    string Color;
 };
 
 #endif // GGRID_H

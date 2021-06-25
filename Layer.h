@@ -21,6 +21,7 @@ public:
     int getsupply();
     double getPF();
     int getIdx();
+    char getDir();
     Layer& operator = (const Layer&);
     bool operator == (const Layer&);
     bool operator > (const Layer&);
