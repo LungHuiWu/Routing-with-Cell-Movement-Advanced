@@ -29,6 +29,7 @@ private:
     vector<string> ADJCIs;
     vector<string> adjNets;
     vector<Route*> delRList;
+    vector<string> selected;
 public:
     Design();
     ~Design();
