@@ -729,13 +729,13 @@ vector<tuple<int,int>> Design::placement(string& CI)
     //case1 : CI doesn't have votage area, do BFS
     if(CIList[CI].hasVtgArea() == false)
     {
+        cout<<CI<<" doesn't has votage area."<<endl;
         int numinp = 0;
         vector<tuple<int,int>> p;
         //vector<vector<tuple<int,int>>> subnet;
         //cout<<subnet.size()<<endl;
         int nsize=adjNets.size();
         vector<vector<tuple<int,int>>> subnet(nsize);
-        vector<vector<tuple<int,int>>> visited(nsize);
         for(int N=0; N<subnet.size(); N++)
         {
             vector<Route*> r = NList[adjNets[N]].getRList();
@@ -800,65 +800,71 @@ vector<tuple<int,int>> Design::placement(string& CI)
                 }
             }
         }
+        bool nosubnet = true;
+        for(int i=0; i<subnet.size(); i++)
+        {
+            if(subnet[i].size()!=0) nosubnet = false;
+        }
+        if(nosubnet == true)
+        {
+            cout <<CI<<" has no subnet."<<endl;
+            p.push_back(CIList[CI].getLocation());
+            p.push_back(CIList[CI].getLocation());
+            return p;
+        }
+        vector<vector<tuple<int,int>>> newvisited = subnet;
+        vector<vector<tuple<int,int>>> visited = subnet;
         while(numinp < 2)
         {
             for(int N=0; N<subnet.size(); N++)
             {
                 int l=0;
-                int loop=subnet[N].size();
+                int loop=newvisited[N].size();
                 while(l<loop)
                 {
-                    int x=get<0>(subnet[N][l]);
-                    int y=get<1>(subnet[N][l]);
+                    int x=get<0>(newvisited[N][l]);
+                    int y=get<1>(newvisited[N][l]);
                     if(x<RowMax)
                     {
                         if(find(subnet[N].begin(), subnet[N].end(), make_tuple(x+1, y))==subnet[N].end())
-                        {
-                            if(find(visited[N].begin(), visited[N].end(), make_tuple(x+1, y))==visited[N].end()) 
-                            {
-                                subnet[N].push_back(make_tuple(x+1, y));
-                                visited[N].push_back(make_tuple(x+1, y));
-                            }
+                        {  
+                            newvisited[N].push_back(make_tuple(x+1, y));
+                            subnet[N].push_back(make_tuple(x+1, y));
+                            visited[N].push_back(make_tuple(x+1, y));
                         }
                     }
                     if(x>RowMin)
                     {
                         if(find(subnet[N].begin(), subnet[N].end(), make_tuple(x-1, y))==subnet[N].end())
                         {
-                            if(find(visited[N].begin(), visited[N].end(), make_tuple(x-1, y))==visited[N].end()) 
-                            {
-                                    subnet[N].push_back(make_tuple(x-1, y));
-                                visited[N].push_back(make_tuple(x-1, y));
-                            }
+                            newvisited[N].push_back(make_tuple(x-1, y));
+                            subnet[N].push_back(make_tuple(x-1, y));
+                            visited[N].push_back(make_tuple(x-1, y));
                         }
                     }
                     if(y<ColMax)
                     {
                         if(find(subnet[N].begin(), subnet[N].end(), make_tuple(x, y+1))==subnet[N].end())
                         {
-                            if(find(visited[N].begin(), visited[N].end(), make_tuple(x, y+1))==visited[N].end()) 
-                            {
-                                subnet[N].push_back(make_tuple(x, y+1));
-                                visited[N].push_back(make_tuple(x, y+1));
-                            }
+                            newvisited[N].push_back(make_tuple(x, y+1));
+                            subnet[N].push_back(make_tuple(x, y+1));
+                            visited[N].push_back(make_tuple(x, y+1));
                         }
                     }
                     if(y>ColMin)
                         {
                         if(find(subnet[N].begin(), subnet[N].end(), make_tuple(x, y-1))==subnet[N].end())
                         {
-                            if(find(visited[N].begin(), visited[N].end(), make_tuple(x, y-1))==visited[N].end()) 
-                            {
-                                subnet[N].push_back(make_tuple(x, y-1));
-                                visited[N].push_back(make_tuple(x, y-1));
-                            }
+                            newvisited[N].push_back(make_tuple(x, y-1));
+                            subnet[N].push_back(make_tuple(x, y-1));
+                            visited[N].push_back(make_tuple(x, y-1));
                         }
                     }
-                    visited[N].push_back(make_tuple(x, y));
                     l++;
                 }
-                subnet[N].erase(subnet[N].begin(), subnet[N].begin()+loop);
+                newvisited[N].erase(newvisited[N].begin(), newvisited[N].begin()+loop);
             }
+             
             int nenet = 0;
             for(int i=0; i<visited.size(); i++)
             {
@@ -868,32 +874,37 @@ vector<tuple<int,int>> Design::placement(string& CI)
                     break;
                 }
             }
+            
             for(int i=0; i<visited[nenet].size(); i++)
             {
-                bool overlap=true;
-                bool pointvalid = true;
-                int row = get<0>(visited[nenet][i]);
-                int col = get<1>(visited[nenet][i]);
                 if(numinp==2)
                 {
                     break;
                 }
-                
+                bool overlap=true;
+                bool pointvalid = true;
+                int row = get<0>(visited[nenet][i]);
+                int col = get<1>(visited[nenet][i]);
                 for(int k=0; k<CIList[CI].getBList().size(); k++)
                 {
                     int lyr=CIList[CI].getBList()[k]->getLayer().getIdx();
                     if(GGridList[row-1][col-1][lyr-1].getSupply()<=CIList[CI].getBList()[k]->getDemand())
                     {
                         pointvalid = false;
+                        cout << "invalid point"<<endl;
                     }
                 }
                 
                 if(pointvalid==false) continue; //this point is not valid 
                 for(int j=1; j<visited.size(); j++)
                 {
-                    if(find(visited[j].begin(), visited[j].end(), visited[nenet][i])==visited[j].end())
+                    if(visited[j].size()!=0)
                     {
-                        if(visited[j].size()!=0) overlap=false;
+                        if(find(visited[j].begin(), visited[j].end(), visited[nenet][i])==visited[j].end()) 
+                        {
+                            overlap=false;
+                                  
+                        }
                         
                     }
                 }
@@ -904,7 +915,6 @@ vector<tuple<int,int>> Design::placement(string& CI)
                 }
             }
         }
-        cout<<CI<<" doesn't has votage area."<<endl;
         return p;
     }
     //case2 : CI has votage area, find min dis
