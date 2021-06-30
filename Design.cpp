@@ -1204,7 +1204,15 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
     for (auto& n : CIList[CI].getADJNets())
     {
         int subnetCount = NList[n].getCIs().size();
-        int countidx = 1;
+        int countidx = 1; bool bump = true;
+        int maxmax = NList[n].getMinLyr(); int minmin;
+        for (auto& p : CIList[CI].getPList())
+        {
+            if (p->getNetname() == n)
+            { 
+                minmin = p->getLayer().getIdx();
+            }
+        }
         string pname;
         clearGGridCovered();
         clearGGridstep();
@@ -1212,52 +1220,61 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
         // set visited for every pin and route
         for (auto& c : NList[n].getCIs())
         {
+            int row = get<0>(CIList[c].getLocation());
+            int col = get<1>(CIList[c].getLocation());
+            if (row==rr && col==cc) bump = true;
+            else bump = false;
             for (auto& p : CIList[c].getPList())
             {
                 if (p->getNetname() == n)
                 { 
-                    int row = get<0>(CIList[c].getLocation());
-                    int col = get<1>(CIList[c].getLocation());
                     int lyr = p->getLayer().getIdx();
                     if (GGridList[row-1][col-1][lyr-1].Covered==0){
                         ++countidx;
                         setCICovered(RList,row,col,lyr,countidx);
                     }
+                    if (p->getLayer().getIdx() < minmin) minmin = p->getLayer().getIdx();
+                    if (p->getLayer().getIdx() > maxmax) maxmax = p->getLayer().getIdx();
                 }
             }
         }
-        //showCovered();
-        for (auto& p : CIList[CI].getPList())
+        vector<Route*> candidate;
+        if(bump) candidate.push_back(new Route(rr,cc,minmin,rr,cc,maxmax,NList[n].getName()));
+        else
         {
-            if (p->getNetname() == n)
-            { 
-                pname = p->getName();
-                ll = p->getLayer().getIdx();
-                if (GGridList[rr-1][cc-1][ll-1].Covered==0){
-                    setCICovered(RList,rr,cc,ll,1);
-                }
-                else{
-                    --countidx;
-                    int blah = GGridList[rr-1][cc-1][ll-1].Covered;
-                    for (int i=0;i<NumRow;++i)
-                    {
-                        for (int j=0;j<NumCol;++j)
+            //showCovered();
+            for (auto& p : CIList[CI].getPList())
+            {
+                if (p->getNetname() == n)
+                { 
+                    pname = p->getName();
+                    ll = p->getLayer().getIdx();
+                    if (GGridList[rr-1][cc-1][ll-1].Covered==0){
+                        setCICovered(RList,rr,cc,ll,1);
+                    }
+                    else{
+                        --countidx;
+                        int blah = GGridList[rr-1][cc-1][ll-1].Covered;
+                        for (int i=0;i<NumRow;++i)
                         {
-                            for (int k=0;k<NumLyr;++k)
+                            for (int j=0;j<NumCol;++j)
                             {
-                                if (GGridList[i][j][k].Covered==blah){
-                                    GGridList[i][j][k].Covered = 1;
+                                for (int k=0;k<NumLyr;++k)
+                                {
+                                    if (GGridList[i][j][k].Covered==blah){
+                                        GGridList[i][j][k].Covered = 1;
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+            // check covered result
+            //showCovered();
+            // maze route
+            candidate = mst(countidx, rr, cc, ll, NList[n].getMinLyr(), NList[n].getName());
         }
-        // check covered result
-        //showCovered();
-        // maze route
-        vector<Route*> candidate = mst(countidx, rr, cc, ll, NList[n].getMinLyr(), NList[n].getName());
         double cost1 = calculate(NList[n].getR(), NList[n].getWeight());
         cost_org += cost1;
         double cost2 = calculate(candidate, NList[n].getWeight());
