@@ -4,6 +4,8 @@
 #include <sstream>
 #include <limits>
 #include <cmath>
+#include <tuple>
+#include <map>
 #include "Design.h"
 
 using namespace std;
