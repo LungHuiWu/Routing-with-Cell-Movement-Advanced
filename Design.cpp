@@ -411,11 +411,15 @@ string Design::select()
         }
         if(Weight >= maxWeight)
         {
-            maxWeight = Weight;
-            CI = c.second.getCIName();
+            if(find(selected.begin(), selected.end(), c.second.getCIName())==selected.end()){
+                maxWeight = Weight;
+                CI = c.second.getCIName();
+            }
+            
             //cout <<"current CI is "<<CI<<" with weight "<<Weight<<"."<<endl;
         }
     }
+    selected.push_back(CI);
     ADJCIs = CIList[CI].getADJCIs(NList); // All CIs connected to CI
     adjNets = CIList[CI].getADJNets(); // All nets connected to CI
 
