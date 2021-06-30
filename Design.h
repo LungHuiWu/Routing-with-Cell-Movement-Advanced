@@ -46,9 +46,11 @@ public:
     void readVtgArea2(string&, string&);
     void readRoute(string&);
     // Algorithms //
+    int getMax();
+    map<string,Net> getNList();
     string select();
     vector<tuple<int,int>> placement(string&);
-    double routing(string&, tuple<int, int>);
+    double routing(string&, tuple<int, int>,int);
     double calculate(vector<Route*>, double);
     void addRoute(int, int, int, int, int, int, string);
     void delRoute(Route*, string);
