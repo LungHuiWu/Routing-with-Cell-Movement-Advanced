@@ -1055,6 +1055,8 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                     }
                 }
             }
+            //showStep();
+            //showCovered();
             for (auto& t : queue2) // check if other subnet is touched
             {
                 row = get<0>(t);
@@ -1201,6 +1203,7 @@ double Design::routing(string& CI, tuple<int, int> new_loc)
                 }
             }
         }
+        //showCovered();
         for (auto& p : CIList[CI].getPList())
         {
             if (p->getNetname() == n)
@@ -1210,11 +1213,27 @@ double Design::routing(string& CI, tuple<int, int> new_loc)
                 if (GGridList[rr-1][cc-1][ll-1].Covered==0){
                     setCICovered(RList,rr,cc,ll,1);
                 }
+                else{
+                    --countidx;
+                    int blah = GGridList[rr-1][cc-1][ll-1].Covered;
+                    for (int i=0;i<NumRow;++i)
+                    {
+                        for (int j=0;j<NumCol;++j)
+                        {
+                            for (int k=0;k<NumLyr;++k)
+                            {
+                                if (GGridList[i][j][k].Covered==blah){
+                                    GGridList[i][j][k].Covered = 1;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         // check covered result
-        // cout << n << endl;
-        // showCovered();
+        //cout << n << endl;
+        //showCovered();
         // maze route
         vector<Route*> candidate = mst(countidx, rr, cc, ll, NList[n].getMinLyr(), NList[n].getName());
         double cost1 = calculate(NList[n].getR(), NList[n].getWeight());
@@ -1229,6 +1248,7 @@ double Design::routing(string& CI, tuple<int, int> new_loc)
             for (auto& r : candidate)
             {
                 addRoute(r->RowS,r->RowE,r->ColS,r->ColE,r->LyrS,r->LyrE,n);
+                setGGridCovered(r,1);
             }
         }
         else
@@ -1237,8 +1257,10 @@ double Design::routing(string& CI, tuple<int, int> new_loc)
             for (auto& r : NList[n].getR())
             {
                 addRoute(r->RowS,r->RowE,r->ColS,r->ColE,r->LyrS,r->LyrE,n);
+                setGGridCovered(r,1);
             }
         }
+        //showCovered();
         NList[n].connect(CIList[CI],pname);
     }
     cout << "Routing finished. The benefit is " << (cost_new-cost_org) << "." << endl;
