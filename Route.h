@@ -13,7 +13,7 @@ private:
 public:
     int RowS, ColS, LyrS;
     int RowE, ColE, LyrE;
-    string NetName;
+    string NetName; 
     string LayerS;
     string LayerE;
     Route();

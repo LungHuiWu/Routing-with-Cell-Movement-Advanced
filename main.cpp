@@ -36,7 +36,7 @@ int main(int argc, char** argv)
                     cout << "The second new place of " << s << " is (" << get<0>(c[i]) << "," << get<1>(c[i]) << ")." << endl;
                 }   
             }
-            if(D.routing(s,c[0]) < 0) // routing output is the benefit
+            if(D.routing(s,c[0]) <= 0) // routing output is the benefit
             {
                 cout << "Routing successful at the first location!" << endl;
             }
