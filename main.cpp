@@ -21,7 +21,7 @@ int main(int argc, char** argv)
         Design D = Design();
         D.readFile(argv[1]);
         int cnt = 0;
-        while(cnt<10){
+        while(cnt<5){   
             string s = D.select();
             cout << "The selected cell is " << s << "." << endl;
             vector<tuple<int, int>> c = D.placement(s);
