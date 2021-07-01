@@ -1211,6 +1211,7 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
             if (p->getNetname() == n)
             { 
                 minmin = p->getLayer().getIdx();
+                maxmax = max(maxmax, p->getLayer().getIdx());
             }
         }
         string pname;
@@ -1239,7 +1240,12 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
             }
         }
         vector<Route*> candidate;
-        if(bump) candidate.push_back(new Route(rr,cc,minmin,rr,cc,maxmax,NList[n].getName()));
+        if(bump)
+        {
+            if (minmin != maxmax){
+                candidate.push_back(new Route(rr,cc,minmin,rr,cc,maxmax,NList[n].getName()));
+            }
+        }
         else
         {
             //showCovered();
