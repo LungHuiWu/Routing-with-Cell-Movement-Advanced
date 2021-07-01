@@ -39,6 +39,11 @@ void Net::connect(CellInst c, string pinname) //may be considered with the conne
     }
 }
 
+void Net::addallCI(string cell)
+{
+    allCIs.push_back(cell);
+}
+
 void Net::clearR()
 {
     R.clear();
@@ -64,6 +69,11 @@ void Net::addRoute(int rs, int cs, int ls ,int re, int ce, int le)
     RList.push_back(new Route(rs,cs,ls,re,ce,le,Name));
 }
 
+void Net::addRouteR(Route* r)
+{
+    RList.push_back(r);
+}
+
 Net& Net::operator = (const Net& n)
 {
     Name = n.Name;
@@ -85,6 +95,10 @@ double Net::getWeight(){
 vector<string> Net::getCIs()
 {
     return conCIs;
+}
+vector<string> Net::getallCI()
+{
+    return allCIs;
 }
 vector<Route*> Net::getR()
 {

@@ -6,6 +6,7 @@
 #include <cmath>
 #include <tuple>
 #include <map>
+#include <string>
 #include "Design.h"
 
 using namespace std;
@@ -159,6 +160,11 @@ void Design::readLayer(string& str)
         in >> s; char dir = s[0];
         in >> s; int supply = stoi(s);
         in >> s; double power = stod(s);
+        if (s == "")
+        {
+            power = supply;
+            supply = 0;
+        }
         Layer* l = new Layer(name, idx, dir, supply, power);
         LList.insert(pair<string, Layer*> (name, l));
         LList_idx[idx] = l;
@@ -197,7 +203,7 @@ void Design::readNonDefaultGGrid(string& str)
         in >> s; int y = stoi(s);
         in >> s; int z = stoi(s);
         in >> s;
-        GGridList[x][y][z].adjustSupply(stoi(s));
+        GGridList[x-1][y-1][z-1].adjustSupply(stoi(s));
         cout << "Done adjusting non-default supplies at (" << x <<  "," << y << "," << z << ")!" << endl;
     }
 }
@@ -254,7 +260,7 @@ void Design::readCellInst(string& str)
     }
     else if (s == "CellInst")
     {
-        in >> s; string name = s;
+        in >> s; string name = s; C.push_back(name);
         in >> s; string mcname = s;
         in >> s; int r = stoi(s);
         in >> s; int c = stoi(s);
@@ -286,7 +292,7 @@ string Design::readNet(string& str, string& Nname)
     }
     else if(s == "Net")
     {
-        in >> s; string name = s;
+        in >> s; string name = s; N.push_back(name);
         for (int i=0;i<NumRow;++i){
             for (int j=0;j<NumCol;++j){
                 for (int k=0;k<NumLyr;++k){
@@ -308,6 +314,7 @@ string Design::readNet(string& str, string& Nname)
         in >> s; size_t slash = s.find('/');
         string cname = s.substr(0,slash);
         string pname = s.substr(slash+1);
+        NList[Nname].addallCI(cname);
         for (size_t i = 0; i<CIList[cname].getPList().size(); ++i)
         {
             if (CIList[cname].getPList()[i]->getName()==pname)
@@ -382,8 +389,8 @@ void Design::readRoute(string& str)
         in >> s; int c2 = stoi(s);
         in >> s; int l2 = stoi(s);
         in >> s; string n = s;
-        NList[n].addRoute(r1,c1,l1,r2,c2,l2);
-        addRoute(r1,r2,c1,c2,l1,l2,n); // GGrid update supply
+        //NList[n].addRoute(r1,c1,l1,r2,c2,l2);
+        //addRoute(r1,r2,c1,c2,l1,l2,n); // GGrid update supply
         cout << "Route added to Net " << n << "." << endl;
     }
 }
@@ -658,6 +665,50 @@ void Design::showCovered()
             cout<< endl;
         }
         cout << endl;
+    }
+}
+
+void Design::showSupply()
+{
+    for (int k=0;k<NumLyr;++k)
+    {
+        for(int i=0;i<NumRow;++i)
+        {
+            for (int j=0;j<NumCol;++j)
+            {
+                cout << GGridList[i][j][k].getSupply() << " ";
+            }
+            cout<< endl;
+        }
+        cout << endl;
+    }
+}
+
+void Design::copySupply()
+{
+    for (int k=0;k<NumLyr;++k)
+    {
+        for(int i=0;i<NumRow;++i)
+        {
+            for (int j=0;j<NumCol;++j)
+            {
+                GGridList[i][j][k].copySupply();
+            }
+        }
+    }
+}
+
+void Design::recoverSupply()
+{
+    for (int k=0;k<NumLyr;++k)
+    {
+        for(int i=0;i<NumRow;++i)
+        {
+            for (int j=0;j<NumCol;++j)
+            {
+                GGridList[i][j][k].recoverSupply();
+            }
+        }
     }
 }
 
@@ -1018,14 +1069,14 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                 lyr = get<2>(t);
                 if (LList_idx[lyr]->getDir() == 'H')
                 {
-                    if (lyr+1>=minlyr && col>1 && GGridList[row-1][col-2][lyr-1].getSupply()>1 && GGridList[row-1][col-2][lyr-1].Color == "W") // left GGrid
+                    if (lyr>=minlyr && col>1 && GGridList[row-1][col-2][lyr-1].getSupply()>1 && GGridList[row-1][col-2][lyr-1].Color == "W") // left GGrid
                     {
                         GGridList[row-1][col-2][lyr-1].Color = "G";
                         GGridList[row-1][col-2][lyr-1].Step = step;
                         queue2.push_back(make_tuple(row,col-1,lyr));
                         GGridList[row-1][col-2][lyr-1].Ancestor = t;
                     }
-                    if (lyr+1>=minlyr && col<NumCol && GGridList[row-1][col][lyr-1].getSupply()>1 && GGridList[row-1][col][lyr-1].Color == "W") // right GGrid
+                    if (lyr>=minlyr && col<NumCol && GGridList[row-1][col][lyr-1].getSupply()>1 && GGridList[row-1][col][lyr-1].Color == "W") // right GGrid
                     {
                         GGridList[row-1][col][lyr-1].Color = "G";
                         GGridList[row-1][col][lyr-1].Step = step;
@@ -1035,14 +1086,14 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                 }
                 else if (LList_idx[lyr]->getDir() == 'V')
                 {
-                    if (lyr+1>=minlyr && row>1 && GGridList[row-2][col-1][lyr-1].getSupply()>1 && GGridList[row-2][col-1][lyr-1].Color == "W") // front GGrid
+                    if (lyr>=minlyr && row>1 && GGridList[row-2][col-1][lyr-1].getSupply()>1 && GGridList[row-2][col-1][lyr-1].Color == "W") // front GGrid
                     {
                         GGridList[row-2][col-1][lyr-1].Color = "G";
                         GGridList[row-2][col-1][lyr-1].Step = step;
                         queue2.push_back(make_tuple(row-1,col,lyr));
                         GGridList[row-2][col-1][lyr-1].Ancestor = t;
                     }
-                    if (lyr+1>=minlyr && row<NumRow && GGridList[row][col-1][lyr-1].getSupply()>1 && GGridList[row][col-1][lyr-1].Color == "W") // back GGrid
+                    if (lyr>=minlyr && row<NumRow && GGridList[row][col-1][lyr-1].getSupply()>1 && GGridList[row][col-1][lyr-1].Color == "W") // back GGrid
                     {
                         GGridList[row][col-1][lyr-1].Color = "G";
                         GGridList[row][col-1][lyr-1].Step = step;
@@ -1086,6 +1137,7 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                 {
                     found = true;
                     queue3.push_back(t);
+                    break;
                 }
             }
             if (found) // connect subnet
@@ -1129,6 +1181,7 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                         tt = (GGridList[row-1][col-1][lyr-1].Ancestor);
                         --temp_step;
                     }
+                    vector<Route*> temp_r;
                     if (queue4.size()>2)
                     {
                         for (int g=1;g<queue4.size()-1;++g)
@@ -1152,7 +1205,9 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                             int row1 = get<0>(queue4[g+1]);
                             int col1 = get<1>(queue4[g+1]);
                             int lyr1 = get<2>(queue4[g+1]);
-                            outputRoute.push_back(new Route(row1,col1,lyr1,row2,col2,lyr2,netname));
+                            Route* nr = new Route(row1,col1,lyr1,row2,col2,lyr2,netname);
+                            setGGridCovered(nr,1);
+                            temp_r.push_back(nr);
                         }
                     }
                     else if (queue4.size()==2)
@@ -1163,13 +1218,17 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                         int row1 = get<0>(queue4[1]);
                         int col1 = get<1>(queue4[1]);
                         int lyr1 = get<2>(queue4[1]);
-                        outputRoute.push_back(new Route(row1,col1,lyr1,row2,col2,lyr2,netname));
+                        Route* nr = new Route(row1,col1,lyr1,row2,col2,lyr2,netname);
+                        setGGridCovered(nr,1);
+                        temp_r.push_back(nr);
                     }
                     else
                     {
                         cout << "wierd" << endl;
                     }
+                    outputRoute.insert(outputRoute.end(),temp_r.begin(),temp_r.end());
                 }
+                //showCovered();
             }
             else // update queue
             {
@@ -1190,15 +1249,15 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
 {
     cout << "Start routing..." << endl;
     // Relocate CI
-    CIList[CI].Relocate(new_loc);
+    // CIList[CI].Relocate(new_loc);
     // get subnets & link grid
     map<string,vector<Route*>> subnet;
     clearGGridCovered();
     clearGGridstep();
     double cost_org = 0;
     double cost_new = 0;
-    int rr = get<0>(CIList[CI].getLocation());
-    int cc = get<1>(CIList[CI].getLocation());
+    int rr = get<0>(new_loc);
+    int cc = get<1>(new_loc);
     int ll;
     // for every net
     for (auto& n : CIList[CI].getADJNets())
@@ -1223,8 +1282,13 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
         {
             int row = get<0>(CIList[c].getLocation());
             int col = get<1>(CIList[c].getLocation());
-            if (row==rr && col==cc) bump = true;
-            else bump = false;
+            if (row==rr && col==cc)
+            {
+                bump *= true;
+            }
+            else{
+                bump *= false;
+            }
             for (auto& p : CIList[c].getPList())
             {
                 if (p->getNetname() == n)
@@ -1289,6 +1353,7 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
         // link
         if (cost1 >= cost2)
         {
+            CIList[CI].Relocate(new_loc);
             NList[n].addtoRList(candidate);
             for (auto& r : candidate)
             {
@@ -1307,11 +1372,68 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
                 }
             }
         }
-        //showCovered();
         NList[n].connect(CIList[CI],pname);
     }
     cout << "Routing finished. The benefit is " << (cost_new-cost_org) << "." << endl;
     return (cost_new - cost_org);
+}
+
+vector<Route*> Design::reroute()
+{
+    copySupply();
+    reRoute.clear();
+    double cost1,cost2;
+    string name;
+    // Set covered for each net
+    for (int i=0;i<N.size();++i)
+    {
+        clearGGridCovered();
+        int cov = 0; int lyr;
+        int row,col;
+        for (int j=0;j<NList[N[i]].getallCI().size();++j)
+        {
+            row = get<0>(CIList[NList[N[i]].getallCI()[j]].getLocation());
+            col = get<1>(CIList[NList[N[i]].getallCI()[j]].getLocation());
+            for (int k=0;k<CIList[NList[N[i]].getallCI()[j]].getPList().size();++k)
+            {
+                if (CIList[NList[N[i]].getallCI()[j]].getPList()[k]->getNetname()==N[i])
+                {
+                    if (GGridList[row-1][col-1][CIList[NList[N[i]].getallCI()[j]].getPList()[k]->getLayer().getIdx()-1].Covered == 0)
+                    {
+                        ++cov; lyr = CIList[NList[N[i]].getallCI()[j]].getPList()[k]->getLayer().getIdx();
+                        GGridList[row-1][col-1][CIList[NList[N[i]].getallCI()[j]].getPList()[k]->getLayer().getIdx()-1].Covered = cov;
+                    }
+                }
+            }
+        }
+        cout << N[i] << endl;
+        showCovered();
+        vector<Route*> rnet;
+        if (cov>1)
+        {
+            rnet = mst(cov,0,0,0,NList[N[i]].getMinLyr(),N[i]);
+        }
+        else
+        {
+            rnet.push_back(new Route(row,col,lyr,row,col,NList[N[i]].getMinLyr(),N[i]));
+        }
+        for (auto& r : rnet)
+        {
+            //cout << r->RowS << " " << r->ColS << " " << r->LyrS << " " << r->RowE<< " " << r->ColE << " " << r->LyrE << endl;
+            NList[N[i]].addRouteR(r);
+            addRoute(r->RowS,r->RowE,r->ColS,r->ColE,r->LyrS,r->LyrE,N[i]);
+        }
+        reRoute.insert(reRoute.end(),rnet.begin(),rnet.end());
+        cost1 += calculate(NList[N[i]].getRList(),NList[N[i]].getWeight());
+        cost2 += calculate(rnet,NList[N[i]].getWeight());
+    }
+    cout << cost1 << " " << cost2 << endl;
+    showSupply();
+    if (cost2 > cost1)
+    {
+        recoverSupply();
+    }
+    return reRoute;
 }
 
 double Design::calculate(vector<Route*> R, double weight)
