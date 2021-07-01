@@ -62,6 +62,10 @@ vector<tuple<int,int>> CellInst::getVtgArea()
     return VtgArea;
 }
 
+int CellInst::getVtgAreaGGridCount()
+{
+    return VtgAreaGGridCount;
+}
 tuple<int,int> CellInst::getLocation()
 {
     return make_tuple(Row,Col);

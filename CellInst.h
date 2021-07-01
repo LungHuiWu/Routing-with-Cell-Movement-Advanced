@@ -36,6 +36,7 @@ public:
     void setVtgArea(int, int);
     string getCIName();
     bool hasVtgArea();
+    int getVtgAreaGGridCount();
     vector<tuple<int,int>> getVtgArea();
     tuple<int,int> getLocation();
     vector<string> getADJCIs(map<string,Net>);

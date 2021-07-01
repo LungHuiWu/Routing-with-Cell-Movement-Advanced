@@ -2,11 +2,12 @@ NumMovedCellInst 3
 CellInst C4 3 3
 CellInst C5 3 3
 CellInst C6 3 1
-NumRoutes 20
-4 1 1 4 4 1 N1
-4 2 2 4 2 1 N1
-2 2 2 4 2 2 N1
-2 2 1 2 2 2 N1
+NumRoutes 21
+4 2 1 4 4 1 N1
+4 1 1 4 2 1 N1
+2 2 2 2 2 1 N1
+4 2 2 2 2 2 N1
+4 2 1 4 2 2 N1
 4 4 2 4 4 1 N2
 3 4 2 4 4 2 N2
 3 4 1 3 4 2 N2

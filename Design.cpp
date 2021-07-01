@@ -361,12 +361,14 @@ void Design::readVtgArea2(string& s_name, string& s_ins)
     }
     for (int i = 0; i<cell.size(); ++i)
     {
-        CellInst c = CIList[cell[i]];
         for (int j = 0;j<num;++j)
         {
-            c.setVtgArea(x[j],y[j]);
+            cout<<"setting "<<cell[i]<<" with Vtgarea "<<x[j]<<","<<y[j]<<"."<<endl;
+            CIList[cell[i]].setVtgArea(x[j],y[j]);
+            
         }
         cout << "Finish setting the VoltageArea of CellInst " << cell[i] << "." << endl;
+        cout <<cell[i]<<" has VtgareaCount "<<CIList[cell[i]].getVtgAreaGGridCount()<<"."<<endl;
     }
 }
 
@@ -408,14 +410,14 @@ string Design::select()
     for(auto& c : mCIList)
     {
         double Weight = 0;
+        //cout <<c.second.getPList().size()<<endl;
         for(int i = 0; i < c.second.getPList().size(); i++)
         {   
             string net = c.second.getPList()[i]->getNetname();
-            if(net != "")
-            {
-                Weight += NList[net].getWeight();
-            }
+            Weight += NList[net].getWeight();
+            cout <<net<<" has weight "<<NList[net].getWeight()<<endl;
         }
+        cout<<CI<<" has importance "<<Weight<<endl;
         if(Weight >= maxWeight)
         {
             if(find(selected.begin(), selected.end(), c.second.getCIName())==selected.end()){
@@ -983,6 +985,7 @@ vector<tuple<int,int>> Design::placement(string& CI)
     //case2 : CI has votage area, find min dis
     else
     {
+        cout<<CI<<" has votage area."<<endl;
         vector<tuple<int,int>> p(2); //new places
         vector<tuple<int,int>> Vtgarea = CIList[CI].getVtgArea();
         int mindis = numeric_limits<int>::max();
