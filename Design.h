@@ -30,6 +30,8 @@ private:
     vector<string> adjNets;
     vector<Route*> delRList;
     vector<string> selected;
+    vector<string> C, N;
+    vector<Route*> reRoute;
 public:
     Design();
     ~Design();
@@ -61,9 +63,13 @@ public:
     void setCICovered(vector<Route*>&,int,int,int,int);
     void showCovered();
     void showColor();
+    void showSupply();
+    void copySupply();
+    void recoverSupply();
     void showStep();
     vector<Route*> mst(int,int,int,int,int,string);
     void setWhite();
+    vector<Route*> reroute();
 };
 
 #endif // DESIGN_H

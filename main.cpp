@@ -21,6 +21,26 @@ int main(int argc, char** argv)
     {
         Design D = Design();
         D.readFile(argv[1]);
+        vector<Route*> rr = D.reroute();
+        /*fstream ff;
+        ff.open(argv[2], ios::out);
+        if (!ff)
+        {
+            cerr << "fuck you" << endl;
+        }
+        else
+        {
+            ff << "NumMovedCellInst " << 0 << endl;
+            ff << "NumRoutes " << rr.size() << endl;
+            for (auto& n : D.getNList())
+            {
+                for (int rrr=0;rrr < n.second.getRList().size();++rrr)
+                {
+                    ff << n.second.getRList()[rrr]->RowS << " " << n.second.getRList()[rrr]->ColS << " " << n.second.getRList()[rrr]->LyrS << " " << n.second.getRList()[rrr]->RowE << " " << n.second.getRList()[rrr]->ColE << " " << n.second.getRList()[rrr]->LyrE << " " << n.first << endl;
+                }
+            }
+        }
+        return 1;*/
         int cnt = 0; int r_num = 0;
         map<string, tuple<int,int>> MovedCI;
         while(cnt<D.getMax()){   
@@ -83,5 +103,6 @@ int main(int argc, char** argv)
             }
         }
     }
+    cout << "Execution ends" << endl;
     return 1;
 }
