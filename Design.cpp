@@ -871,9 +871,10 @@ vector<tuple<int,int>> Design::placement(string& CI)
         if(nosubnet == true)
         {
             cout <<CI<<" has no subnet."<<endl;
-            p.push_back(CIList[CI].getLocation());
-            p.push_back(CIList[CI].getLocation());
-            return p;
+            for(int i; i<CIList[CI].getADJCIs(NList).size(); i++)
+            {
+                subnet[i].push_back(CIList[CIList[CI].getADJCIs(NList)[i]].getLocation());
+            }
         }
         vector<vector<tuple<int,int>>> newvisited = subnet;
         vector<vector<tuple<int,int>>> visited = subnet;
