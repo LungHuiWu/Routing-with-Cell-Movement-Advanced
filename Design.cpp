@@ -364,12 +364,10 @@ void Design::readVtgArea2(string& s_name, string& s_ins)
     {
         for (int j = 0;j<num;++j)
         {
-            cout<<"setting "<<cell[i]<<" with Vtgarea "<<x[j]<<","<<y[j]<<"."<<endl;
             CIList[cell[i]].setVtgArea(x[j],y[j]);
-            
         }
         cout << "Finish setting the VoltageArea of CellInst " << cell[i] << "." << endl;
-        cout <<cell[i]<<" has VtgareaCount "<<CIList[cell[i]].getVtgAreaGGridCount()<<"."<<endl;
+        //cout <<cell[i]<<" has VtgareaCount "<<CIList[cell[i]].getVtgAreaGGridCount()<<"."<<endl;
     }
 }
 
@@ -418,7 +416,7 @@ string Design::select()
             Weight += NList[net].getWeight();
             //cout <<net<<" has weight "<<NList[net].getWeight()<<endl;
         }
-        cout<<c.second.getCIName()<<" has importance "<<Weight<<endl;
+        //cout<<c.second.getCIName()<<" has importance "<<Weight<<endl;
         if(Weight >= maxWeight)
         {
             if(find(selected.begin(), selected.end(), c.second.getCIName())==selected.end()){
@@ -445,6 +443,10 @@ string Design::select()
         }
     }
     return CI;
+}
+bool Design::nomovableCI()
+{
+    return mCIList.size()==selected.size();
 }
 
 void Design::addRoute(int r1, int r2, int c1, int c2, int l1, int l2, string n)
@@ -505,6 +507,10 @@ int Design::getMax()
 map<string,Net> Design::getNList()
 {
     return NList;
+}
+map<string,CellInst> Design::getmCIList()
+{
+    return mCIList;
 }
 
 void Design::delRoute(Route* r, string n)
@@ -600,6 +606,11 @@ void Design::clearAncestor()
             }
         }
     }
+}
+
+map<string,CellInst> Design::getCIList()
+{
+    return CIList;
 }
 
 void Design::setGGridCovered(Route* r, int idx)
@@ -874,9 +885,11 @@ vector<tuple<int,int>> Design::placement(string& CI)
         if(nosubnet == true)
         {
             cout <<CI<<" has no subnet."<<endl;
-            for(int i; i<CIList[CI].getADJCIs(NList).size(); i++)
+            //cout<<ADJCIs.size()<<endl;
+            for(int i=0; i<ADJCIs.size(); i++)
             {
-                subnet[i].push_back(CIList[CIList[CI].getADJCIs(NList)[i]].getLocation());
+                subnet[i].push_back(CIList[ADJCIs[i]].getLocation());
+                cout <<"subnet "<<i<<" has point "<<get<0>(CIList[ADJCIs[i]].getLocation()) <<","<<get<1>(CIList[ADJCIs[i]].getLocation()) <<endl;
             }
         }
         vector<vector<tuple<int,int>>> newvisited = subnet;
@@ -1063,10 +1076,10 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                 }
             }
         }
-        int step = 1;
+        int step = 1; bool yap;
         while(!found) // while not found
         {
-            ++step;
+            ++step; yap = false;
             for (auto& t : queue1) // Draw outer part
             {
                 row = get<0>(t);
@@ -1076,6 +1089,7 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                 {
                     if (lyr>=minlyr && col>1 && GGridList[row-1][col-2][lyr-1].getSupply()>1 && GGridList[row-1][col-2][lyr-1].Color == "W") // left GGrid
                     {
+                        yap = true;
                         GGridList[row-1][col-2][lyr-1].Color = "G";
                         GGridList[row-1][col-2][lyr-1].Step = step;
                         queue2.push_back(make_tuple(row,col-1,lyr));
@@ -1083,6 +1097,7 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                     }
                     if (lyr>=minlyr && col<NumCol && GGridList[row-1][col][lyr-1].getSupply()>1 && GGridList[row-1][col][lyr-1].Color == "W") // right GGrid
                     {
+                        yap = true;
                         GGridList[row-1][col][lyr-1].Color = "G";
                         GGridList[row-1][col][lyr-1].Step = step;
                         queue2.push_back(make_tuple(row,col+1,lyr));
@@ -1093,6 +1108,7 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                 {
                     if (lyr>=minlyr && row>1 && GGridList[row-2][col-1][lyr-1].getSupply()>1 && GGridList[row-2][col-1][lyr-1].Color == "W") // front GGrid
                     {
+                        yap = true;
                         GGridList[row-2][col-1][lyr-1].Color = "G";
                         GGridList[row-2][col-1][lyr-1].Step = step;
                         queue2.push_back(make_tuple(row-1,col,lyr));
@@ -1100,6 +1116,7 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                     }
                     if (lyr>=minlyr && row<NumRow && GGridList[row][col-1][lyr-1].getSupply()>1 && GGridList[row][col-1][lyr-1].Color == "W") // back GGrid
                     {
+                        yap = true;
                         GGridList[row][col-1][lyr-1].Color = "G";
                         GGridList[row][col-1][lyr-1].Step = step;
                         queue2.push_back(make_tuple(row+1,col,lyr));
@@ -1112,6 +1129,7 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                 }
                 if (lyr>1 && GGridList[row-1][col-1][lyr-2].getSupply()>1 && GGridList[row-1][col-1][lyr-2].Color == "W") // lower GGrid
                 {
+                    yap = true;
                     GGridList[row-1][col-1][lyr-2].Color = "G";
                     GGridList[row-1][col-1][lyr-2].Step = step;
                     queue2.push_back(make_tuple(row,col,lyr-1));
@@ -1122,6 +1140,7 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                 }
                 if (lyr<NumLyr && GGridList[row-1][col-1][lyr].getSupply()>1 && GGridList[row-1][col-1][lyr].Color == "W") // upper GGrid
                 {
+                    yap = true;
                     GGridList[row-1][col-1][lyr].Color = "G";
                     GGridList[row-1][col-1][lyr].Step = step;
                     queue2.push_back(make_tuple(row,col,lyr+1));
@@ -1130,6 +1149,12 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                         GGridList[row-1][col-1][lyr].Ancestor = t;
                     }
                 }
+            }
+            //showStep();
+            if (!yap)
+            {
+                outputRoute.clear();
+                return outputRoute;
             }
             for (auto& t : queue2) // check if other subnet is touched
             {
@@ -1259,6 +1284,7 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
     clearGGridstep();
     double cost_org = 0;
     double cost_new = 0;
+    bool impossible = false;
     int rr = get<0>(new_loc);
     int cc = get<1>(new_loc);
     int ll;
@@ -1345,25 +1371,37 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
                 }
             }
             // check covered result
+            //cout << n << endl;
             //showCovered();
             // maze route
             candidate = mst(countidx, rr, cc, ll, NList[n].getMinLyr(), NList[n].getName());
-            cout << candidate.size() << endl;
         }
-        double cost1 = calculate(NList[n].getR(), NList[n].getWeight());
-        cost_org += cost1;
-        double cost2 = calculate(candidate, NList[n].getWeight());
-        cost_new += cost2;
         subnet[n] = candidate;
-        NList[n].connect(CIList[CI],pname);
-        cout << "Original cost: " << cost1 << ", New cost: " << cost2 << "." << endl;
+        if (candidate.empty())
+        {
+            impossible = true;
+            cout << "Impossible position!!!" << endl;
+        }
+        else
+        {
+            double cost1 = calculate(NList[n].getR(), NList[n].getWeight());
+            cost_org += cost1;
+            double cost2 = calculate(candidate, NList[n].getWeight());
+            cost_new += cost2;
+            cout << "Original cost: " << cost1 << ", New cost: " << cost2 << "." << endl;
+        }
     }
     // link
-    if (cost_org > cost_new)
+    if (cost_org > cost_new && !impossible)
     {
         CIList[CI].Relocate(new_loc);
         for (auto& n : CIList[CI].getADJNets())
         {
+            for(auto& p : CIList[CI].getPList()){
+                if(p->getNetname()==n){
+                    NList[n].connect(CIList[CI],p->getNetname());
+                }
+            }
             NList[n].addtoRList(subnet[n]);
             for (auto& r : subnet[n])
             {

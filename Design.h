@@ -47,9 +47,12 @@ public:
     void readVtgArea(string&);
     void readVtgArea2(string&, string&);
     void readRoute(string&);
+    bool nomovableCI();
     // Algorithms //
     int getMax();
+    map<string,CellInst> getCIList();
     map<string,Net> getNList();
+    map<string,CellInst> getmCIList(); 
     string select();
     vector<tuple<int,int>> placement(string&);
     double routing(string&, tuple<int, int>,int);
