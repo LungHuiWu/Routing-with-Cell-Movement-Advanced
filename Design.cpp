@@ -772,19 +772,60 @@ void Design::setCICovered(vector<Route*>& RList, int row,int c,int l,int idx)
     }
     for (int i=0;i<RList.size();++i)
     {
-        Route* r = RList[i];
-        if (r->getPoints()[0] == make_tuple(row,c,l))
+        string dir;
+        if (get<0>(RList[i]->getPoints()[0])!=get<0>(RList[i]->getPoints()[1]))
         {
-            setGGridCovered(r,idx);
+            dir = "V";
+        }
+        else if (get<1>(RList[i]->getPoints()[0])!=get<1>(RList[i]->getPoints()[1]))
+        {
+            dir = "H";
+        }
+        else if (get<2>(RList[i]->getPoints()[0])!=get<2>(RList[i]->getPoints()[1]))
+        {
+            dir = "U";
+        }
+        else
+        {
+            dir = "N";
+        }
+        Route* r = RList[i];
+        if (RList[i]->getPoints()[0] == make_tuple(row,c,l))
+        {
+            setGGridCovered(RList[i],idx);
             RList.erase(RList.begin()+i);
             setCICovered(RList,get<0>(r->getPoints()[1]),get<1>(r->getPoints()[1]),get<2>(r->getPoints()[1]),idx);
             return;
         }
-        else if (r->getPoints()[1] == make_tuple(row,c,l))
+        else if (RList[i]->getPoints()[1] == make_tuple(row,c,l))
         {
-            setGGridCovered(r,idx);
+            setGGridCovered(RList[i],idx);
             RList.erase(RList.begin()+i);
             setCICovered(RList,get<0>(r->getPoints()[0]),get<1>(r->getPoints()[0]),get<2>(r->getPoints()[0]),idx);
+            return;
+        }
+        else if (dir == "V" && get<1>(RList[i]->getPoints()[0]) == c && get<2>(RList[i]->getPoints()[0]) == l && (get<0>(RList[i]->getPoints()[0])-row)*(get<0>(RList[i]->getPoints()[1])-row)<0 )
+        {
+            setGGridCovered(RList[i],idx);
+            RList.erase(RList.begin()+i);
+            setCICovered(RList,get<0>(r->getPoints()[0]),get<1>(r->getPoints()[0]),get<2>(r->getPoints()[0]),idx);
+            setCICovered(RList,get<0>(r->getPoints()[1]),get<1>(r->getPoints()[1]),get<2>(r->getPoints()[1]),idx);
+            return;
+        }
+        else if (dir == "H" && get<0>(RList[i]->getPoints()[0]) == row && get<2>(RList[i]->getPoints()[0]) == l && (get<1>(RList[i]->getPoints()[0])-c)*(get<1>(RList[i]->getPoints()[1])-c)<0 )
+        {
+            setGGridCovered(RList[i],idx);
+            RList.erase(RList.begin()+i);
+            setCICovered(RList,get<0>(r->getPoints()[0]),get<1>(r->getPoints()[0]),get<2>(r->getPoints()[0]),idx);
+            setCICovered(RList,get<0>(r->getPoints()[1]),get<1>(r->getPoints()[1]),get<2>(r->getPoints()[1]),idx);
+            return;
+        }
+        else if (dir == "U" && get<0>(RList[i]->getPoints()[0]) == row && get<1>(RList[i]->getPoints()[0]) == c && (get<2>(RList[i]->getPoints()[0])-l)*(get<2>(RList[i]->getPoints()[1])-l)<0 )
+        {
+            setGGridCovered(RList[i],idx);
+            RList.erase(RList.begin()+i);
+            setCICovered(RList,get<0>(r->getPoints()[0]),get<1>(r->getPoints()[0]),get<2>(r->getPoints()[0]),idx);
+            setCICovered(RList,get<0>(r->getPoints()[1]),get<1>(r->getPoints()[1]),get<2>(r->getPoints()[1]),idx);
             return;
         }
     }
@@ -1290,6 +1331,10 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
             }
         }
         string pname;
+        /*for (int i =0;i<NList[n].getRList().size();++i)
+        {
+            cout << NList[n].getRList()[i]->RowS << " "<< NList[n].getRList()[i]->ColS << " "<< NList[n].getRList()[i]->LyrS << " "<< NList[n].getRList()[i]->RowE << " "<< NList[n].getRList()[i]->ColE << " "<< NList[n].getRList()[i]->LyrE << endl;
+        }*/
         clearGGridCovered();
         clearGGridstep();
         vector<Route*> RList = NList[n].getRList();
@@ -1329,7 +1374,7 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
         }
         else
         {
-            //showCovered();
+            // showCovered();
             for (auto& p : CIList[CI].getPList())
             {
                 if (p->getNetname() == n)
@@ -1362,8 +1407,9 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
             //showCovered();
             // maze route
             candidate = mst(countidx, rr, cc, ll, NList[n].getMinLyr(), NList[n].getName());
+            //showCovered();
         }
-        subnet[n] = candidate;
+        subnet[n].insert(subnet[n].end(),candidate.begin(),candidate.end());
         if (candidate.empty())
         {
             impossible = true;
