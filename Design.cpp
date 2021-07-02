@@ -362,10 +362,9 @@ void Design::readVtgArea2(string& s_name, string& s_ins)
     }
     for (int i = 0; i<cell.size(); ++i)
     {
-        CellInst c = CIList[cell[i]];
         for (int j = 0;j<num;++j)
         {
-            c.setVtgArea(x[j],y[j]);
+            CIList[cell[i]].setVtgArea(x[j],y[j]);
         }
         cout << "Finish setting the VoltageArea of CellInst " << cell[i] << "." << endl;
     }
@@ -598,6 +597,11 @@ void Design::clearAncestor()
             }
         }
     }
+}
+
+map<string,CellInst> Design::getCIList()
+{
+    return CIList;
 }
 
 void Design::setGGridCovered(Route* r, int idx)
@@ -1059,10 +1063,10 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                 }
             }
         }
-        int step = 1;
+        int step = 1; bool yap;
         while(!found) // while not found
         {
-            ++step;
+            ++step; yap = false;
             for (auto& t : queue1) // Draw outer part
             {
                 row = get<0>(t);
@@ -1072,6 +1076,7 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                 {
                     if (lyr>=minlyr && col>1 && GGridList[row-1][col-2][lyr-1].getSupply()>1 && GGridList[row-1][col-2][lyr-1].Color == "W") // left GGrid
                     {
+                        yap = true;
                         GGridList[row-1][col-2][lyr-1].Color = "G";
                         GGridList[row-1][col-2][lyr-1].Step = step;
                         queue2.push_back(make_tuple(row,col-1,lyr));
@@ -1079,6 +1084,7 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                     }
                     if (lyr>=minlyr && col<NumCol && GGridList[row-1][col][lyr-1].getSupply()>1 && GGridList[row-1][col][lyr-1].Color == "W") // right GGrid
                     {
+                        yap = true;
                         GGridList[row-1][col][lyr-1].Color = "G";
                         GGridList[row-1][col][lyr-1].Step = step;
                         queue2.push_back(make_tuple(row,col+1,lyr));
@@ -1089,6 +1095,7 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                 {
                     if (lyr>=minlyr && row>1 && GGridList[row-2][col-1][lyr-1].getSupply()>1 && GGridList[row-2][col-1][lyr-1].Color == "W") // front GGrid
                     {
+                        yap = true;
                         GGridList[row-2][col-1][lyr-1].Color = "G";
                         GGridList[row-2][col-1][lyr-1].Step = step;
                         queue2.push_back(make_tuple(row-1,col,lyr));
@@ -1096,6 +1103,7 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                     }
                     if (lyr>=minlyr && row<NumRow && GGridList[row][col-1][lyr-1].getSupply()>1 && GGridList[row][col-1][lyr-1].Color == "W") // back GGrid
                     {
+                        yap = true;
                         GGridList[row][col-1][lyr-1].Color = "G";
                         GGridList[row][col-1][lyr-1].Step = step;
                         queue2.push_back(make_tuple(row+1,col,lyr));
@@ -1108,6 +1116,7 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                 }
                 if (lyr>1 && GGridList[row-1][col-1][lyr-2].getSupply()>1 && GGridList[row-1][col-1][lyr-2].Color == "W") // lower GGrid
                 {
+                    yap = true;
                     GGridList[row-1][col-1][lyr-2].Color = "G";
                     GGridList[row-1][col-1][lyr-2].Step = step;
                     queue2.push_back(make_tuple(row,col,lyr-1));
@@ -1118,6 +1127,7 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                 }
                 if (lyr<NumLyr && GGridList[row-1][col-1][lyr].getSupply()>1 && GGridList[row-1][col-1][lyr].Color == "W") // upper GGrid
                 {
+                    yap = true;
                     GGridList[row-1][col-1][lyr].Color = "G";
                     GGridList[row-1][col-1][lyr].Step = step;
                     queue2.push_back(make_tuple(row,col,lyr+1));
@@ -1126,6 +1136,12 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                         GGridList[row-1][col-1][lyr].Ancestor = t;
                     }
                 }
+            }
+            //showStep();
+            if (!yap)
+            {
+                outputRoute.clear();
+                return outputRoute;
             }
             for (auto& t : queue2) // check if other subnet is touched
             {
@@ -1255,6 +1271,7 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
     clearGGridstep();
     double cost_org = 0;
     double cost_new = 0;
+    bool impossible = false;
     int rr = get<0>(new_loc);
     int cc = get<1>(new_loc);
     int ll;
@@ -1341,25 +1358,37 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
                 }
             }
             // check covered result
+            //cout << n << endl;
             //showCovered();
             // maze route
             candidate = mst(countidx, rr, cc, ll, NList[n].getMinLyr(), NList[n].getName());
-            cout << candidate.size() << endl;
         }
-        double cost1 = calculate(NList[n].getR(), NList[n].getWeight());
-        cost_org += cost1;
-        double cost2 = calculate(candidate, NList[n].getWeight());
-        cost_new += cost2;
         subnet[n] = candidate;
-        NList[n].connect(CIList[CI],pname);
-        cout << "Original cost: " << cost1 << ", New cost: " << cost2 << "." << endl;
+        if (candidate.empty())
+        {
+            impossible = true;
+            cout << "Impossible position!!!" << endl;
+        }
+        else
+        {
+            double cost1 = calculate(NList[n].getR(), NList[n].getWeight());
+            cost_org += cost1;
+            double cost2 = calculate(candidate, NList[n].getWeight());
+            cost_new += cost2;
+            cout << "Original cost: " << cost1 << ", New cost: " << cost2 << "." << endl;
+        }
     }
     // link
-    if (cost_org > cost_new)
+    if (cost_org > cost_new && !impossible)
     {
         CIList[CI].Relocate(new_loc);
         for (auto& n : CIList[CI].getADJNets())
         {
+            for(auto& p : CIList[CI].getPList()){
+                if(p->getNetname()==n){
+                    NList[n].connect(CIList[CI],p->getNetname());
+                }
+            }
             NList[n].addtoRList(subnet[n]);
             for (auto& r : subnet[n])
             {

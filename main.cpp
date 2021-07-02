@@ -58,13 +58,24 @@ int main(int argc, char** argv)
                     cout << "The second new place of " << s << " is (" << get<0>(c[i]) << "," << get<1>(c[i]) << ")." << endl;
                 }   
             }
-            if(D.routing(s,c[0],1) < 0) // routing output is the benefit
+            double score;
+            if (c[0]!=D.getCIList()[s].getLocation())
+            {
+                score = D.routing(s,c[0],1);
+            }
+            else
+            {
+                cout << "Repeated at first location!" << endl;
+                score = 10;
+            }
+            if(score < 0) // routing output is the benefit
             {
                 MovedCI[s] = c[0];
                 cout << "Routing successful at the first location!" << endl;
             }
             else {
-                if (D.routing(s,c[1],2) < 0) // So far haven't get here, but delroute is needed if in here again
+                score = D.routing(s,c[1],2);
+                if (score < 0) // So far haven't get here, but delroute is needed if in here again
                 {
                     MovedCI[s] = c[1];
                     cout << "Routing successful at the second location!" << endl;

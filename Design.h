@@ -49,6 +49,7 @@ public:
     void readRoute(string&);
     // Algorithms //
     int getMax();
+    map<string,CellInst> getCIList();
     map<string,Net> getNList();
     string select();
     vector<tuple<int,int>> placement(string&);
