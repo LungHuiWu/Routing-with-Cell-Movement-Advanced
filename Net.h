@@ -21,6 +21,7 @@ private:
     vector<Route*> RList;
     vector<string> conCIs; //CIs connected to the Net
     vector<Route*> R;
+    vector<string> allCIs;
 public:
     Net();
     Net(string, int, int, double);
@@ -28,6 +29,7 @@ public:
     void connect(CellInst, string); // For connecting nets onto pins
     void Disconnect(CellInst, string);
     void addRoute(int, int, int, int, int, int);
+    void addRouteR(Route*);
     Net& operator = (const Net&);
     string getName();
     double getWeight();
@@ -39,6 +41,8 @@ public:
     int getMinLyr();
     void addtoRList(vector<Route*>);
     void clearR();
+    void addallCI(string);
+    vector<string> getallCI();
 };
 
 #endif // NET_H

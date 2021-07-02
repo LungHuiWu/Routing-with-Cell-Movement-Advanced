@@ -14,6 +14,7 @@ private:
     int rowIdx, colIdx, LyrIdx;
     Layer* Lyr;
     int supply;
+    int supply_r;
     map <string,int> NetLink;
 public:
     GGrid();
@@ -21,6 +22,8 @@ public:
     ~GGrid();
     void adjustSupply(int); // For non-default-supply-ggrids
     int getSupply();
+    void copySupply();
+    void recoverSupply();
     void addNet(string);
     void linkNet(string);
     void unlinkNet(string);
