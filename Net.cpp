@@ -27,6 +27,7 @@ Net::~Net()
 void Net::connect(CellInst c, string pinname) //may be considered with the connect in pin
 {
     vector<Pin*> p = c.getPList();
+    cout << c.getCIName() << pinname << Name << endl;
     for(int i=0; i<p.size(); i++){
         if(p[i]->getName()==pinname){
             p[i]->Connect(Name);

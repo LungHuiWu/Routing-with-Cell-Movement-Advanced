@@ -1364,7 +1364,6 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
                 }
             }
         }
-
         vector<Route*> candidate;
         if(bump)
         {
@@ -1374,7 +1373,7 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
         }
         else
         {
-            // showCovered();
+            //showCovered();
             for (auto& p : CIList[CI].getPList())
             {
                 if (p->getNetname() == n)
@@ -1403,7 +1402,7 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
                 }
             }
             // check covered result
-            //cout << n << endl;
+            cout << n << endl;
             //showCovered();
             // maze route
             candidate = mst(countidx, rr, cc, ll, NList[n].getMinLyr(), NList[n].getName());
@@ -1430,9 +1429,10 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
         CIList[CI].Relocate(new_loc);
         for (auto& n : CIList[CI].getADJNets())
         {
-            for(auto& p : CIList[CI].getPList()){
+            for(auto& p : CIList[CI].getPList())
+            {
                 if(p->getNetname()==n){
-                    NList[n].connect(CIList[CI],p->getNetname());
+                    NList[n].connect(CIList[CI],p->getName());
                 }
             }
             NList[n].addtoRList(subnet[n]);
@@ -1448,6 +1448,12 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
         if (route_num == 2){
             for (auto& n : CIList[CI].getADJNets())
             {
+                for(auto& p : CIList[CI].getPList())
+                {
+                    if(p->getNetname()==n){
+                        NList[n].connect(CIList[CI],p->getName());
+                    }
+                }
                 NList[n].addtoRList(NList[n].getR());
                 for (auto& r : NList[n].getR())
                 {
