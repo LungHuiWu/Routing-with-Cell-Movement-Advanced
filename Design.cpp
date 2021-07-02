@@ -265,11 +265,12 @@ void Design::readCellInst(string& str)
         in >> s; int r = stoi(s);
         in >> s; int c = stoi(s);
         in >> s; bool mov = (s == "Movable");
+        CellInst CC = CellInst(MCList[mcname], name, r, c, mov);
         if(mov == true)
         {
-            mCIList.insert(pair<string, CellInst> (name, CellInst(MCList[mcname], name, r, c, mov)));
+            mCIList.insert(pair<string, CellInst> (name, CC));
         }
-        CIList.insert(pair<string, CellInst> (name, CellInst(MCList[mcname], name, r, c, mov)));
+        CIList.insert(pair<string, CellInst> (name, CC));
         for (int i=0;i<MCList[mcname].getBList().size();++i)
         {
             GGridList[r-1][c-1][MCList[mcname].getBList()[i]->getLayer().getIdx()-1].adjustSupply(-MCList[mcname].getBList()[i]->getDemand());
@@ -319,7 +320,7 @@ string Design::readNet(string& str, string& Nname)
         {
             if (CIList[cname].getPList()[i]->getName()==pname)
             {
-                //CIList[cname].getPList()[i]->Connect(Nname);
+                CIList[cname].getPList()[i]->Connect(Nname);
                 NList[Nname].connect(CIList[cname], pname);
                 cout << "Pin " << pname << " in CellInst " << cname << " is connected to Net " << Nname << "." <<endl;
             }
@@ -403,7 +404,7 @@ string Design::select()
     {
         n.second.clearR();
     }
-    double maxWeight = 0;
+    double maxWeight;
     string CI;
     for(auto& c : mCIList)
     {
@@ -1127,8 +1128,6 @@ vector<Route*> Design::mst(int count, int r,int c,int l, int minlyr, string netn
                     }
                 }
             }
-            //showStep();
-            //showCovered();
             for (auto& t : queue2) // check if other subnet is touched
             {
                 row = get<0>(t);
@@ -1304,6 +1303,7 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
                 }
             }
         }
+
         vector<Route*> candidate;
         if(bump)
         {
@@ -1345,26 +1345,35 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
             //showCovered();
             // maze route
             candidate = mst(countidx, rr, cc, ll, NList[n].getMinLyr(), NList[n].getName());
+            cout << candidate.size() << endl;
         }
         double cost1 = calculate(NList[n].getR(), NList[n].getWeight());
         cost_org += cost1;
         double cost2 = calculate(candidate, NList[n].getWeight());
         cost_new += cost2;
+        subnet[n] = candidate;
+        NList[n].connect(CIList[CI],pname);
         cout << "Original cost: " << cost1 << ", New cost: " << cost2 << "." << endl;
-        // link
-        if (cost1 >= cost2)
+    }
+    // link
+    if (cost_org > cost_new)
+    {
+        CIList[CI].Relocate(new_loc);
+        for (auto& n : CIList[CI].getADJNets())
         {
-            CIList[CI].Relocate(new_loc);
-            NList[n].addtoRList(candidate);
-            for (auto& r : candidate)
+            NList[n].addtoRList(subnet[n]);
+            for (auto& r : subnet[n])
             {
                 addRoute(r->RowS,r->RowE,r->ColS,r->ColE,r->LyrS,r->LyrE,n);
                 setGGridCovered(r,1);
             }
         }
-        else
-        {
-            if (route_num == 2){
+    }
+    else
+    {
+        if (route_num == 2){
+            for (auto& n : CIList[CI].getADJNets())
+            {
                 NList[n].addtoRList(NList[n].getR());
                 for (auto& r : NList[n].getR())
                 {
@@ -1373,7 +1382,6 @@ double Design::routing(string& CI, tuple<int, int> new_loc, int route_num)
                 }
             }
         }
-        NList[n].connect(CIList[CI],pname);
     }
     cout << "Routing finished. The benefit is " << (cost_new-cost_org) << "." << endl;
     return (cost_new - cost_org);
@@ -1407,8 +1415,8 @@ vector<Route*> Design::reroute()
                 }
             }
         }
-        cout << N[i] << endl;
-        showCovered();
+        //cout << N[i] << endl;
+        //showCovered();
         vector<Route*> rnet;
         if (cov>1)
         {
@@ -1428,12 +1436,12 @@ vector<Route*> Design::reroute()
         cost1 += calculate(NList[N[i]].getRList(),NList[N[i]].getWeight());
         cost2 += calculate(rnet,NList[N[i]].getWeight());
     }
-    cout << cost1 << " " << cost2 << endl;
-    showSupply();
-    if (cost2 > cost1)
+    //cout << cost1 << " " << cost2 << endl;
+    //showSupply();
+    /*if (cost2 > cost1)
     {
         recoverSupply();
-    }
+    }*/
     return reRoute;
 }
 
